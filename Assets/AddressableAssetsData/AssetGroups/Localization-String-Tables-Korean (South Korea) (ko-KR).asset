@@ -15,6 +15,13 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Korean (South Korea) (ko-KR)
   m_GUID: b883ae34e6e24d049b00928ae4dcb2a7
   m_SerializeEntries:
+  - m_GUID: 526c725b61fb45d45913ecf8e1147d2b
+    m_Address: Quest_ko-KR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko-KR
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ce143552772bebf4b92b8808a68d4309
     m_Address: Locales_ko-KR
     m_ReadOnly: 1
