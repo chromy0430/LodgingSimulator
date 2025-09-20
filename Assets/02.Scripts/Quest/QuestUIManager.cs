@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 public class QuestUIManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -26,7 +27,16 @@ public class QuestUIManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     // 퀘스트 UI를 화면에 표시
     public void ShowQuest(QuestData quest)
     {
-        questDialogueText.text = quest.dialogue;
+        if (LocalizationSettings.SelectedLocale.Identifier.Code == "en")
+        {
+            questDialogueText.text = quest.dialogue_en;
+        }
+        else
+        {
+            questDialogueText.text = quest.dialogue;
+        }
+
+        //questDialogueText.text = quest.dialogue;
         questConditionText.text = GetConditionString(quest);
         characterImage.texture = quest.characterImage;
 
@@ -54,7 +64,26 @@ public class QuestUIManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         });
     }
 
-    // 완료 조건 텍스트 생성
+    public string GetConditionString(QuestData quest)
+    {
+        string condition = (LocalizationSettings.SelectedLocale.Identifier.Code == "en") ? "Condition: " : "조건: ";
+        switch (quest.completionType)
+        {
+            case QuestCompletionType.Tutorial:
+                return (LocalizationSettings.SelectedLocale.Identifier.Code == "en") ? "Condition: Pull to accept." : "조건: 당겨서 수락하세요.";
+            case QuestCompletionType.BuildObject:
+                string objectName = PlacementSystem.Instance.database.GetObjectData(quest.completionTargetID).LocalizedName;
+                return condition + $"{objectName} " + ((LocalizationSettings.SelectedLocale.Identifier.Code == "en") ? $"Build {quest.completionAmount}" : $"{quest.completionAmount}개 건설");
+            case QuestCompletionType.EarnMoney:
+                return condition + ((LocalizationSettings.SelectedLocale.Identifier.Code == "en") ? $"Earn {quest.completionAmount} G" : $"{quest.completionAmount}원 벌기");
+            case QuestCompletionType.ReachReputation:
+                return condition + ((LocalizationSettings.SelectedLocale.Identifier.Code == "en") ? $"Reach {quest.completionAmount} reputation" : $"평판 {quest.completionAmount}점 달성");
+            default:
+                return "";
+        }
+    }
+
+    /*// 완료 조건 텍스트 생성
     public string GetConditionString(QuestData quest)
     {
         switch (quest.completionType)
@@ -72,7 +101,7 @@ public class QuestUIManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             default:
                 return "";
         }
-    }
+    }*/
 
     public bool IsVisible()
     {
