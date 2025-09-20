@@ -25,6 +25,24 @@ public class QuestLogItem : MonoBehaviour
         completeButton.gameObject.SetActive(false); // 처음엔 완료 버튼 숨김
         completeButton.onClick.AddListener(OnCompleteButtonClicked);
 
+        Refresh();
+
+        //UpdateStatus();
+    }
+
+    /// <summary>
+    /// UI 텍스트를 현재 언어 설정에 맞게 새로고침하는 함수
+    /// </summary>
+    public void Refresh()
+    {
+        if (associatedQuest == null) return;
+
+        // 퀘스트 이름 업데이트
+        questNameText.text = (LocalizationSettings.SelectedLocale.Identifier.Code == "en")
+            ? associatedQuest.data.questName_en
+            : associatedQuest.data.questName;
+
+        // 퀘스트 상태(진행도) 업데이트
         UpdateStatus();
     }
 
