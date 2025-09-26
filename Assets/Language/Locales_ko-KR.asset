@@ -117,6 +117,11 @@ MonoBehaviour:
     m_Localized: "\uC7A5\n\n\uC2DD"
     m_Metadata:
       m_Items: []
+  - m_Id: 13422110699065344
+    m_Localized: "{0}\uCE35"
+    m_Metadata:
+      m_Items:
+      - rid: 4779790810586284160
   references:
     version: 2
     RefIds:
@@ -126,3 +131,4 @@ MonoBehaviour:
         m_Entries: 
         m_SharedEntries:
         - id: 10797671157760
+        - id: 13422110699065344

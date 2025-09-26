@@ -116,6 +116,11 @@ MonoBehaviour:
     m_Localized: Deco
     m_Metadata:
       m_Items: []
+  - m_Id: 13422110699065344
+    m_Localized: '{0}F'
+    m_Metadata:
+      m_Items:
+      - rid: 4779790810586284159
   references:
     version: 2
     RefIds:
@@ -125,3 +130,4 @@ MonoBehaviour:
         m_Entries: 
         m_SharedEntries:
         - id: 10797671157760
+        - id: 13422110699065344

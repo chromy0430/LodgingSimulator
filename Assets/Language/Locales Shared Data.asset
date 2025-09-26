@@ -111,6 +111,10 @@ MonoBehaviour:
     m_Key: Build_Deco
     m_Metadata:
       m_Items: []
+  - m_Id: 13422110699065344
+    m_Key: Ingame_FloorCount
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
