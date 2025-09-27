@@ -22,7 +22,7 @@ namespace JY
         
         private TimeSystem timeSystem;
 
-        public static TimeManager instance;
+        public static TimeManager instance { get; set; }
 
         [SerializeField] private LocalizedString dayCounterLocalizedString;
         #endregion

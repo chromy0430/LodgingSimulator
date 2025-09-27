@@ -13,6 +13,16 @@ TagManager:
   - Wall
   - Stair
   - Sunbed
+  - WaitingPosition_Reception
+  - WorkPosition_Reception
+  - KitchenInduction
+  - KitchenTable
+  - KitchenCounter
+  - Kitchen
+  - KitchenChair
+  - WorkPosition_Gas
+  - WorkPosition_Kitchen
+  - WaitingPosition_Kitchen
   layers:
   - Default
   - TransparentFX

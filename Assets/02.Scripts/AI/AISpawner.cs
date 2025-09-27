@@ -27,10 +27,10 @@ namespace JY
         
         [Header("디버그 설정")]
         [Tooltip("디버그 로그 표시 여부")]
-        [SerializeField] private bool showDebugLogs = false;
+        [SerializeField] private bool showDebugLogs = true;
         
         [Tooltip("중요한 이벤트만 로그 표시")]
-        [SerializeField] private bool showImportantLogsOnly = true;
+        [SerializeField] private bool showImportantLogsOnly = false;
         
         [Tooltip("인스펙터에서 실시간 정보 표시")]
         [SerializeField] private bool showRuntimeInfo = true;
@@ -197,7 +197,21 @@ namespace JY
             ai.SetActive(true);
             activeAIs.Add(ai);
             
-            DebugLog($"{ai.name} 활성화됨 (현재 활성화된 AI: {activeAIs.Count}개)");
+            // 통계 시스템에 방문객 스폰 알림 (총 방문객 수 증가)
+            if (DailyStatisticsManager.Instance != null)
+            {
+                DailyStatisticsManager.Instance.OnVisitorSpawned();
+                DebugLog($"방문객 스폰 기록: {ai.name} (총 방문객 수 증가)", true);
+            }
+            else
+            {
+                DebugLog("DailyStatisticsManager가 아직 초기화되지 않았습니다!", true);
+            }
+            
+            DebugLog($"{ai.name} 활성화됨 (현재 활성화된 AI: {activeAIs.Count}개)", true);
+            
+            // UI 업데이트 알림
+            NotifyAICountChanged();
         }
 
         /// <summary>
@@ -213,6 +227,9 @@ namespace JY
             ai.transform.position = transform.position;
             
             DebugLog($"{ai.name} 풀로 반환됨 (현재 활성화된 AI: {activeAIs.Count}개)");
+            
+            // UI 업데이트 알림
+            NotifyAICountChanged();
         }
 
         /// <summary>
@@ -241,6 +258,38 @@ namespace JY
             
             StartCoroutine(SpawnMultipleAIs(count));
             DebugLog($"수동 스폰: {count}명의 AI", true);
+        }
+        
+        /// <summary>
+        /// AI 수 변경 시 UI 업데이트 알림
+        /// </summary>
+        private void NotifyAICountChanged()
+        {
+            // RealTimeAICounterUI 찾기 및 업데이트
+            var aiCounterUI = FindFirstObjectByType<RealTimeAICounterUI>();
+            if (aiCounterUI != null)
+            {
+                aiCounterUI.OnAICountChanged();
+            }
+        }
+        
+        /// <summary>
+        /// 방문객 수 테스트 (디버그용)
+        /// </summary>
+        public void TestVisitorCount()
+        {
+            DebugLog($"현재 활성 AI 수: {GetActiveAICount()}명", true);
+            DebugLog($"풀에 남은 AI 수: {GetPooledAICount()}명", true);
+            
+            if (DailyStatisticsManager.Instance != null)
+            {
+                DailyStatisticsManager.Instance.TestVisitorSpawn();
+                DebugLog("방문객 수 테스트 완료", true);
+            }
+            else
+            {
+                DebugLog("DailyStatisticsManager가 null입니다!", true);
+            }
         }
 
         /// <summary>
