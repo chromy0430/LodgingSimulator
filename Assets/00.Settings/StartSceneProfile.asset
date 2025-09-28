@@ -451,7 +451,7 @@ MonoBehaviour:
     m_Value: 0.6
   shadowOpacityFallback:
     m_OverrideState: 0
-    m_Value: 0
+    m_Value: 0.058
   temporalAccumulationFactor:
     m_OverrideState: 0
     m_Value: 1
