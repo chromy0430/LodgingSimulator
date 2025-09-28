@@ -12837,8 +12837,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableShipSystem: 1
-  shipPrefab: {fileID: 8642108410424812284, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
+  shipPrefab: {fileID: 2520708286187388505, guid: 641ed3ebaeb71c24c8e0cb692f7aa2a0, type: 3}
   maxShipCount: 1
+  shipPos: {fileID: 1343268045}
   spawnTimeBeforeArrival: 10
   shipRoutes:
   - routeId: 1Route
@@ -23118,8 +23119,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1776537334}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.3241228, y: 0.15646642, z: -0.05404734, w: -0.93141913}
-  m_LocalPosition: {x: 30.154694, y: 59.65283, z: 102.82961}
+  m_LocalRotation: {x: 0.3535534, y: -0.61237246, z: 0.3535534, w: 0.61237246}
+  m_LocalPosition: {x: 45, y: 25, z: 30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

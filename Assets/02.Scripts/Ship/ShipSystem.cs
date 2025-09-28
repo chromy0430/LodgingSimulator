@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 namespace JY
 {
@@ -15,7 +16,8 @@ namespace JY
         [SerializeField] private bool enableShipSystem = true;
         [SerializeField] private GameObject shipPrefab;
         [SerializeField] private int maxShipCount = 5; // 최대 배 개수
-        
+        [SerializeField] private Transform shipPos;
+
         [Header("시간 설정")]
         [SerializeField] private float spawnTimeBeforeArrival = 5f; // 도착 5분 전 스폰 (분)
         
@@ -74,6 +76,7 @@ namespace JY
             if (shipPool == null)
             {
                 shipPool = gameObject.AddComponent<ShipObjectPool>();
+                shipPool.FirstShipPos = shipPos.position;
             }
             shipPool.Initialize(shipPrefab, maxShipCount);
             

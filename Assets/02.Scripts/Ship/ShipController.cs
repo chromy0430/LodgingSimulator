@@ -234,7 +234,7 @@ namespace JY
                 
                 // 위치 보간
                 Vector3 currentPos = Vector3.Lerp(startPosition, destination, smoothProgress);
-                currentPos.y = 0.5f; // 바닥에서 약간 위로 유지
+                //currentPos.y = 0.5f; // 바닥에서 약간 위로 유지
                 transform.position = currentPos;
                 
                 // 회전 보간

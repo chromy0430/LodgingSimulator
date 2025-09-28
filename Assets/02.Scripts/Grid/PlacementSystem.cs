@@ -99,12 +99,6 @@ public class PlacementSystem : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T)) // 언제든 삭제 가능
-        {
-            FloorLock = true;
-            Debug.Log($"증축 시스템 해금 상태 = {FloorLock}");
-        }
-
         DeliteModeMouth();
 
 
