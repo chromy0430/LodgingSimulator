@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.001
@@ -119,63 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &9369883
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 8642108410424812284, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_Name
-      value: smallship
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 75
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 85.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8981654726889781318, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 4f2848ccc4f74e748bd9584830d1a685, type: 3}
 --- !u!1 &19163725
 GameObject:
   m_ObjectHideFlags: 0
@@ -10728,7 +10671,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -10738,7 +10681,7 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 2
+  m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: c676158fc68cb744f996dbd962352d7d, type: 2}
@@ -30997,4 +30940,3 @@ SceneRoots:
   - {fileID: 1855775602}
   - {fileID: 1267908465}
   - {fileID: 1475756802}
-  - {fileID: 9369883}

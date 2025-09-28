@@ -65,14 +65,14 @@ Material:
     m_Floats:
     - _Depth: 0
     - _Displacement: 0
-    - _Normal_Strengh: 0.37
+    - _Normal_Strengh: 0.552
     - _QueueControl: 1
     - _QueueOffset: 0
     - _Smoothness: 1
     - _Strength: 0.01
     m_Colors:
-    - _Deep_Water_Color: {r: 0.30037373, g: 0.7761305, b: 0.8490566, a: 0.98039216}
+    - _Deep_Water_Color: {r: 0.3003737, g: 0.7761305, b: 0.8490566, a: 1}
     - _FormColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Shallow_Water_Color: {r: 0.0032929946, g: 0.43149614, b: 0.6981132, a: 1}
+    - _Shallow_Water_Color: {r: 0.0032929946, g: 0.4314961, b: 0.6981132, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
