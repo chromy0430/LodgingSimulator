@@ -66,7 +66,7 @@ Material:
     - _Depth: 1
     - _Displacement: 4.86
     - _FormStrength: 0.15
-    - _Normal_Strengh: 0.436
+    - _Normal_Strengh: 0.8
     - _QueueControl: 1
     - _QueueOffset: 0
     - _Smoothness: 1
