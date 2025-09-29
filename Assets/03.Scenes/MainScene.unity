@@ -32516,7 +32516,7 @@ PrefabInstance:
       objectReference: {fileID: 1124041654}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: currentReputation
-      value: 0
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: 'gradeNames.Array.data[0]'

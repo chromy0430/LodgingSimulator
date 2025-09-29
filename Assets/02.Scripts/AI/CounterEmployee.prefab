@@ -206,11 +206,11 @@ MonoBehaviour:
   workPosition: {fileID: 0}
   waitingPosition: {fileID: 0}
   useManualPositions: 1
-  moveSpeed: 3.5
+  moveSpeed: 7
   animator: {fileID: 1585226175114939880}
-  workAnimationTrigger: Work
+  workAnimationTrigger: Working
   idleAnimationTrigger: Idle
-  moveAnimationTrigger: Move
+  moveAnimationTrigger: Moving
   isHired: 0
   showDebugLogs: 1
   showImportantLogsOnly: 0
