@@ -4677,6 +4677,18 @@ PrefabInstance:
       propertyPath: m_Value
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1251722836903504466, guid: cb138841055f5134b830665ae41d86e6, type: 3}
+      propertyPath: Btn_CloseUI
+      value: 
+      objectReference: {fileID: 332801545}
+    - target: {fileID: 2061579910741593565, guid: cb138841055f5134b830665ae41d86e6, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 555
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061579910741593565, guid: cb138841055f5134b830665ae41d86e6, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 111
+      objectReference: {fileID: 0}
     - target: {fileID: 3358261269101206543, guid: cb138841055f5134b830665ae41d86e6, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4761,6 +4773,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3867473710731199299, guid: cb138841055f5134b830665ae41d86e6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4227576722377296873, guid: cb138841055f5134b830665ae41d86e6, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -4832,6 +4848,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5535309144818137087, guid: cb138841055f5134b830665ae41d86e6, type: 3}
   m_PrefabInstance: {fileID: 332801543}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &332801545 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6652970753017807438, guid: cb138841055f5134b830665ae41d86e6, type: 3}
+  m_PrefabInstance: {fileID: 332801543}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &341927863
 GameObject:
   m_ObjectHideFlags: 0
@@ -32516,7 +32543,7 @@ PrefabInstance:
       objectReference: {fileID: 1124041654}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: currentReputation
-      value: 1000
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: 'gradeNames.Array.data[0]'

@@ -44,6 +44,8 @@ namespace JY
         // UI 상태
         private EmployeeType selectedEmployeeType;
         private List<GameObject> employeeUIItems = new List<GameObject>();
+
+        [SerializeField] private Button Btn_CloseUI;
         
         #region Unity Lifecycle
         
@@ -66,6 +68,7 @@ namespace JY
         private void InitializeUI()
         {
             // 시스템 참조 가져오기
+            Btn_CloseUI.onClick.AddListener(CloseUI);
             hiringSystem = EmployeeHiringSystem.Instance;
             playerWallet = PlayerWallet.Instance;
             
@@ -249,11 +252,16 @@ namespace JY
             }
             employeeUIItems.Clear();
         }
-        
+
         #endregion
-        
+
         #region UI 이벤트
-                
+
+        public void CloseUI()
+        {
+            this.gameObject.SetActive(false);
+        }
+
         private void RequestHiring(EmployeeType employeeType)
         {
             selectedEmployeeType = employeeType;

@@ -367,8 +367,13 @@ namespace JY
         private GameObject CreateNewShipFromPrefab(GameObject prefab)
         {
             if (prefab == null) return null;
-            
-            GameObject newShip = Instantiate(prefab, FirstShipPos, Quaternion.identity);
+
+            Vector3 spawnPosition = FirstShipPos;
+            spawnPosition.y = prefab.transform.position.y;
+            GameObject newShip = Instantiate(prefab, spawnPosition, Quaternion.identity);
+
+
+            //GameObject newShip = Instantiate(prefab, FirstShipPos, Quaternion.identity);
             newShip.name = $"{prefab.name}_{GetNextShipId()}";
             newShip.transform.SetParent(poolParent);
             newShip.SetActive(false);

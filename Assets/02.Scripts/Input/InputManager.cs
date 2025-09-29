@@ -167,14 +167,14 @@ public class InputManager : MonoBehaviour
             // UI를 활성화하고, 시작 크기를 설정한 후 애니메이션 실행
             SettingUI.SetActive(true);
             SettingUI.transform.localScale = Vector3.one * 0.1f;
-            SettingUI.transform.DOScale(1f, animationDuration).SetEase(openEase);
+            SettingUI.transform.DOScale(1f, animationDuration).SetEase(openEase).SetUpdate(true);
         }
         // UI가 활성화 상태일 때 -> 닫기
         else
         {
             // 크기 애니메이션을 먼저 실행하고, 애니메이션이 끝나면 비활성화
             SettingUI.transform.DOScale(0.1f, animationDuration)
-                .SetEase(closeEase)
+                .SetEase(closeEase).SetUpdate(true)
                 .OnComplete(() =>
                 {
                     SettingUI.SetActive(false);

@@ -565,7 +565,7 @@ namespace JY
             
             return $"카운터: {currentCounterEmployees}/{counterCount * maxEmployeesPerCounter}명, " +
                    $"식당 전체: {currentKitchenEmployees}/{kitchenCount * maxEmployeesPerKitchen}명, " +
-                   $"식당 카운터: {currentKitchenCounterEmployees}/{kitchenCount * maxCounterEmployeesPerKitchen}명, " +
+                   $"식당 카운터: {currentKitchenCounterEmployees}/{kitchenCount * maxCounterEmployeesPerKitchen}명, \n" +
                    $"식당 대기: {currentKitchenWaitingEmployees}/{kitchenCount * maxWaitingEmployeesPerKitchen}명";
         }
         
