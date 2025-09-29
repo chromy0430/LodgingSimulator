@@ -14,8 +14,6 @@ namespace JY
     {
         [Header("UI 패널")]
         [SerializeField] private GameObject hiringPanel;
-        [SerializeField] private Button openHiringPanelButton;
-        [SerializeField] private Button closeHiringPanelButton;
         
         [Header("직원 목록")]
         [SerializeField] private Transform employeeListParent;
@@ -86,7 +84,7 @@ namespace JY
             // UI 초기 상태 설정
             if (hiringPanel != null)
             {
-                hiringPanel.SetActive(false);
+                hiringPanel.SetActive(true);
             }
             
             if (confirmationDialog != null)
@@ -107,16 +105,6 @@ namespace JY
         
         private void SetupEventListeners()
         {
-            // 패널 열기/닫기 버튼
-            if (openHiringPanelButton != null)
-            {
-                openHiringPanelButton.onClick.AddListener(OpenHiringPanel);
-            }
-            
-            if (closeHiringPanelButton != null)
-            {
-                closeHiringPanelButton.onClick.AddListener(CloseHiringPanel);
-            }
             
             // 확인 대화상자 버튼
             if (confirmButton != null)
@@ -141,15 +129,6 @@ namespace JY
         
         private void RemoveEventListeners()
         {
-            if (openHiringPanelButton != null)
-            {
-                openHiringPanelButton.onClick.RemoveListener(OpenHiringPanel);
-            }
-            
-            if (closeHiringPanelButton != null)
-            {
-                closeHiringPanelButton.onClick.RemoveListener(CloseHiringPanel);
-            }
             
             if (confirmButton != null)
             {
@@ -274,26 +253,7 @@ namespace JY
         #endregion
         
         #region UI 이벤트
-        
-        public void OpenHiringPanel()
-        {
-            if (hiringPanel != null)
-            {
-                hiringPanel.SetActive(true);
-                RefreshUI();
-                DebugLog("고용 패널이 열렸습니다.");
-            }
-        }
-        
-        public void CloseHiringPanel()
-        {
-            if (hiringPanel != null)
-            {
-                hiringPanel.SetActive(false);
-                DebugLog("고용 패널이 닫혔습니다.");
-            }
-        }
-        
+                
         private void RequestHiring(EmployeeType employeeType)
         {
             selectedEmployeeType = employeeType;

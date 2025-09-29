@@ -34,6 +34,8 @@ public class InputManager : MonoBehaviour
     public GameObject QuestUI;
     public Button     SettingBtn;
 
+    public GameObject HiringUI;
+
     public RaycastHit   hit;
     public RaycastHit   hit2; 
     public bool         isBuildMode = false;
@@ -118,6 +120,11 @@ public class InputManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !isBuildMode && !isDeleteMode && !IsPointerOverUI())
         {
             HandleObjectSelection();
+        }
+
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            HiringUI.gameObject.SetActive(!HiringUI.activeSelf);
         }
     }
 
