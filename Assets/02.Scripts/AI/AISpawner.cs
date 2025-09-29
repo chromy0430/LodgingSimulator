@@ -324,7 +324,7 @@ namespace JY
         }
 
         /// <summary>
-        /// 다음 스폰 시간 반환 (분 단위)
+        /// 다음 스폰 시간 반환 (분 단위) - 하루 기준으로만 반환
         /// </summary>
         public float GetNextSpawnTime()
         {
@@ -340,14 +340,17 @@ namespace JY
                 int spawnTimeInMinutes = spawnHour * 60;
                 if (spawnTimeInMinutes > currentTimeInMinutes)
                 {
+                    DebugLog($"다음 스폰 시간: 오늘 {spawnHour}시 ({spawnTimeInMinutes}분)", false);
                     return spawnTimeInMinutes;
                 }
             }
             
-            // 오늘 남은 스폰 시간이 없으면 내일 첫 번째 스폰 시간
+            // 오늘 남은 스폰 시간이 없으면 내일 첫 번째 스폰 시간 (하루 기준으로만)
             if (spawnTimes.Count > 0)
             {
-                return spawnTimes[0] * 60 + 1440; // 1440분 = 24시간
+                int nextSpawnTime = spawnTimes[0] * 60; // 내일 첫 번째 시간 (24시간 더하지 않음)
+                DebugLog($"다음 스폰 시간: 내일 {spawnTimes[0]}시 ({nextSpawnTime}분)", false);
+                return nextSpawnTime;
             }
             
             return 0f;

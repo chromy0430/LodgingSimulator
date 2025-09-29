@@ -151,15 +151,18 @@ namespace JY
                         if (aiSpawnTime <= currentTimeInMinutes)
                         {
                             schedule.scheduledDay = currentDay + 1;
+                            DebugLog($"초기 스케줄: {route.routeId} 내일 {aiSpawnTime/60:F0}시 예정 (현재: {currentDay}일)", true);
                         }
                         else
                         {
                             schedule.scheduledDay = currentDay;
+                            DebugLog($"초기 스케줄: {route.routeId} 오늘 {aiSpawnTime/60:F0}시 예정 (현재: {currentDay}일)", true);
                         }
                     }
                     else
                     {
                         schedule.scheduledDay = 1; // 기본값
+                        DebugLog($"초기 스케줄: {route.routeId} 1일차 {aiSpawnTime/60:F0}시 예정 (TimeSystem 없음)", true);
                     }
                     
                     shipSchedules[route.routeId] = schedule;
@@ -229,18 +232,34 @@ namespace JY
         /// </summary>
         private bool ShouldSpawnShip(ShipSchedule schedule, float currentTime)
         {
-            // 날짜 검증
+            // 날짜 검증 - 스케줄된 날짜가 되었거나 지났으면 스폰 가능
             if (timeSystem != null && schedule.scheduledDay > 0)
             {
                 int currentDay = timeSystem.CurrentDay;
-                if (currentDay != schedule.scheduledDay)
+                if (currentDay < schedule.scheduledDay)
                 {
-                    return false; // 스케줄된 날짜가 아니면 스폰하지 않음
+                    DebugLog($"스케줄 대기: {schedule.route.routeId} (현재: {currentDay}일, 예정: {schedule.scheduledDay}일)", false);
+                    return false; // 아직 스케줄된 날짜가 아님
+                }
+                
+                // 스케줄된 날짜가 지났으면 스케줄 업데이트
+                if (currentDay > schedule.scheduledDay)
+                {
+                    DebugLog($"스케줄 날짜 지남 - 업데이트: {schedule.route.routeId} (현재: {currentDay}일, 이전: {schedule.scheduledDay}일)", true);
+                    ResetAndUpdateSchedule(schedule);
+                    return false; // 업데이트 후 다음 프레임에 다시 체크
                 }
             }
             
             float spawnTime = schedule.arrivalTime - spawnTimeBeforeArrival;
-            return currentTime >= spawnTime && currentTime < schedule.arrivalTime;
+            bool shouldSpawn = currentTime >= spawnTime && currentTime < schedule.arrivalTime;
+            
+            if (shouldSpawn)
+            {
+                DebugLog($"배 스폰 조건 충족: {schedule.route.routeId} (현재: {currentTime:F1}분, 스폰시간: {spawnTime:F1}분)", true);
+            }
+            
+            return shouldSpawn;
         }
         
         /// <summary>

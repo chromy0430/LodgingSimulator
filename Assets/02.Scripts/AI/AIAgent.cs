@@ -442,20 +442,20 @@ public class AIAgent : MonoBehaviour
                         TransitionToState(AIState.MovingToQueue);
                         Debug.Log($"AI {gameObject.name}: 11~16시, 방 없음, 대기열로 이동 (15%).");
                     }
-                    else if (randomValue < 0.25f)
+                    else if (randomValue < 0.55f && hour >= 11 && hour <= 15)
                     {
-                        // 선베드 사용 시도
+                        // 선베드 사용 시도 (11-15시만, 40% 확률)
                         if (TryFindAvailableSunbedRoom())
                         {
-                            Debug.Log($"AI {gameObject.name}: 11~16시, 방 없음, 선베드 방으로 이동 (10%).");
+                            Debug.Log($"AI {gameObject.name}: 11~15시, 방 없음, 선베드 방으로 이동 (40%).");
                         }
                         else
                         {
                             TransitionToState(AIState.Wandering);
-                            Debug.Log($"AI {gameObject.name}: 11~16시, 방 없음, 선베드 없어서 배회 (10%).");
+                            Debug.Log($"AI {gameObject.name}: 11~15시, 방 없음, 선베드 없어서 배회 (40%).");
                         }
                     }
-                    else if (randomValue < 0.35f)
+                    else if (randomValue < 0.65f)
                     {
                         // 식당으로 이동 시도
                         if (TryFindAvailableKitchen())
@@ -502,53 +502,17 @@ public class AIAgent : MonoBehaviour
             }
             else
             {
-                // 11-15시 매시간 선베드가 있는 방의 AI가 선베드로 이동
-                if (hour >= 11 && hour <= 15 && !isUsingSunbed && currentState != AIState.MovingToSunbed && currentState != AIState.UsingSunbed)
+                // 방이 있는 AI는 선베드를 사용하지 않고 기존 행동만 함
+                float randomValue = Random.value;
+                if (randomValue < 0.5f)
                 {
-                    if (FindSunbedInCurrentRoom(out Transform sunbedTransform))
-                    {
-                        currentSunbedTransform = sunbedTransform;
-                        // 현재 위치 저장
-                        preSunbedPosition = transform.position;
-                        preSunbedRotation = transform.rotation;
-                        TransitionToState(AIState.MovingToSunbed);
-                        Debug.Log($"AI {gameObject.name}: {hour}시, 선베드로 이동 시작.");
-                    }
-                    else
-                    {
-                        // 선베드가 없으면 기존 행동
-                        float randomValue = Random.value;
-                        if (randomValue < 0.5f)
-                        {
-                            TransitionToState(AIState.UseWandering);
-                            Debug.Log($"AI {gameObject.name}: {hour}시, 선베드 없음, 방 외부 배회 (50%).");
-                        }
-                        else
-                        {
-                            TransitionToState(AIState.RoomWandering);
-                            Debug.Log($"AI {gameObject.name}: {hour}시, 선베드 없음, 방 내부 배회 (50%).");
-                        }
-                    }
-                }
-                else if (isUsingSunbed)
-                {
-                    // 이미 선베드 사용 중이면 계속 사용
-                    Debug.Log($"AI {gameObject.name}: 11~15시, 이미 선베드 사용 중.");
+                    TransitionToState(AIState.UseWandering);
+                    Debug.Log($"AI {gameObject.name}: 11~17시, 방 있음, 방 외부 배회 (50%).");
                 }
                 else
                 {
-                    // 11-15시가 아니거나 이미 선베드 관련 상태가 아닌 경우
-                    float randomValue = Random.value;
-                    if (randomValue < 0.5f)
-                    {
-                        TransitionToState(AIState.UseWandering);
-                        Debug.Log($"AI {gameObject.name}: 11~17시, 방 있음, 방 외부 배회 (50%).");
-                    }
-                    else
-                    {
-                        TransitionToState(AIState.RoomWandering);
-                        Debug.Log($"AI {gameObject.name}: 11~17시, 방 있음, 방 내부 배회 (50%).");
-                    }
+                    TransitionToState(AIState.RoomWandering);
+                    Debug.Log($"AI {gameObject.name}: 11~17시, 방 있음, 방 내부 배회 (50%).");
                 }
             }
         }
@@ -590,12 +554,7 @@ public class AIAgent : MonoBehaviour
             return;
         }
         
-        // 선베드 사용 중인 AI는 강제로 선베드 사용 종료 후 퇴장
-        if (isUsingSunbed)
-        {
-            Debug.Log($"AI {gameObject.name}: 17:00, 선베드 사용 중이므로 강제 종료 후 퇴장 (상태: {currentState}).");
-            ForceFinishUsingSunbed();
-        }
+        // 15시까지만 선베드 사용하므로 17시에는 선베드 사용 중인 AI가 없음
 
         // 식사 중인 AI는 강제로 식사 종료 후 퇴장
         if (isEating)
@@ -637,9 +596,7 @@ public class AIAgent : MonoBehaviour
                 currentState == AIState.RoomWandering ||
                 currentState == AIState.MovingToRoom ||
                 currentState == AIState.MovingToBed ||
-                currentState == AIState.Sleeping ||
-                currentState == AIState.MovingToSunbed ||
-                currentState == AIState.UsingSunbed) && 
+                currentState == AIState.Sleeping) && 
                 currentRoomIndex != -1;
     }
 
@@ -753,11 +710,15 @@ public class AIAgent : MonoBehaviour
     #region 업데이트 및 상태 머신
     void Update()
     {
-        if (!agent.isOnNavMesh)
+        // 선베드 사용 중이거나 수면 중일 때는 NavMesh 체크 건너뛰기
+        if (!isUsingSunbed && !isSleeping && !isEating)
         {
-            Debug.LogWarning($"AI {gameObject.name}: NavMesh 벗어남");
-            ReturnToPool();
-            return;
+            if (!agent.isOnNavMesh)
+            {
+                Debug.LogWarning($"AI {gameObject.name}: NavMesh 벗어남");
+                ReturnToPool();
+                return;
+            }
         }
         
         // Inspector에서 설정이 변경되면 전역 설정 업데이트
@@ -844,7 +805,8 @@ public class AIAgent : MonoBehaviour
                 if (currentRoomIndex != -1 && currentRoomIndex < roomList.Count)
                 {
                     Bounds roomBounds = roomList[currentRoomIndex].bounds;
-                    if (!agent.pathPending && agent.remainingDistance < arrivalDistance && roomBounds.Contains(transform.position))
+                    if (agent != null && agent.enabled && agent.isOnNavMesh && 
+                        !agent.pathPending && agent.remainingDistance < arrivalDistance && roomBounds.Contains(transform.position))
                     {
                         Debug.Log($"AI {gameObject.name}: 룸 {currentRoomIndex + 1}번 도착.");
                         StartCoroutine(UseRoom());
@@ -878,7 +840,8 @@ public class AIAgent : MonoBehaviour
             case AIState.ReportingRoom:
                 break;
             case AIState.ReturningToSpawn:
-                if (!agent.pathPending && agent.remainingDistance < arrivalDistance)
+                if (agent != null && agent.enabled && agent.isOnNavMesh && 
+                    !agent.pathPending && agent.remainingDistance < arrivalDistance)
                 {
                     Debug.Log($"AI {gameObject.name}: 스폰 지점 도착, 디스폰.");
                     ReturnToPool();
@@ -962,7 +925,8 @@ public class AIAgent : MonoBehaviour
                 yield break;
             }
 
-            if (!agent.pathPending && agent.remainingDistance < arrivalDistance)
+            if (agent != null && agent.enabled && agent.isOnNavMesh && 
+                !agent.pathPending && agent.remainingDistance < arrivalDistance)
             {
                 if (counterManager.CanReceiveService(this))
                 {
@@ -1300,7 +1264,8 @@ public class AIAgent : MonoBehaviour
                 float moveTimeout = 15f;
                 float moveTimer = 0f;
                 
-                while (agent.pathPending || agent.remainingDistance > arrivalDistance)
+                while (agent != null && agent.enabled && agent.isOnNavMesh && 
+                       (agent.pathPending || agent.remainingDistance > arrivalDistance))
                 {
                     if (moveTimer >= moveTimeout)
                     {
@@ -1453,7 +1418,8 @@ public class AIAgent : MonoBehaviour
                 Debug.Log($"AI {gameObject.name}: 방 외부 배회 - 거리: {Vector3.Distance(currentPos, validPosition):F1}");
                 
                 // 목적지까지 이동 대기
-                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < arrivalDistance);
+                yield return new WaitUntil(() => agent != null && agent.enabled && agent.isOnNavMesh && 
+                                                !agent.pathPending && agent.remainingDistance < arrivalDistance);
             }
             else
             {
@@ -1491,7 +1457,8 @@ public class AIAgent : MonoBehaviour
                 Debug.Log($"AI {gameObject.name}: 방 내부 배회 - 위치: {roomPosition}");
                 
                 // 목적지까지 이동 대기
-                yield return new WaitUntil(() => !agent.pathPending && agent.remainingDistance < arrivalDistance);
+                yield return new WaitUntil(() => agent != null && agent.enabled && agent.isOnNavMesh && 
+                                                !agent.pathPending && agent.remainingDistance < arrivalDistance);
             }
             else
             {
@@ -1805,9 +1772,10 @@ public class AIAgent : MonoBehaviour
                 if (FindSunbedInCurrentRoom(out Transform sunbedTransform))
                 {
                     currentSunbedTransform = sunbedTransform;
-                    preSunbedPosition = transform.position;
-                    preSunbedRotation = transform.rotation;
+                    // 타이머 바로 시작 (이동할 때부터)
+                    sunbedCoroutine = StartCoroutine(SunbedUsageTimer());
                     TransitionToState(AIState.MovingToSunbed);
+                    Debug.Log($"AI {gameObject.name}: 선베드로 이동 시작, 50분 타이머 시작");
                     return true;
                 }
                 else
@@ -1860,10 +1828,18 @@ public class AIAgent : MonoBehaviour
         
         while (agent.pathPending || agent.remainingDistance > arrivalDistance)
         {
+            // NavMesh에서 벗어났는지 체크
+            if (!agent.isOnNavMesh)
+            {
+                Debug.LogError($"AI {gameObject.name}: 선베드로 이동 중 NavMesh 벗어남, 타임아웃 처리");
+                CleanupSunbedMovement();
+                yield break;
+            }
+            
             if (timer >= timeout)
             {
                 Debug.LogWarning($"AI {gameObject.name}: 선베드로 이동 타임아웃");
-                DetermineBehaviorByTime();
+                CleanupSunbedMovement();
                 yield break;
             }
             
@@ -1873,6 +1849,34 @@ public class AIAgent : MonoBehaviour
 
         // 선베드에 도착했으므로 사용 시작
         StartUsingSunbed();
+    }
+
+    /// <summary>
+    /// 선베드로 이동 실패 시 리소스 정리
+    /// </summary>
+    private void CleanupSunbedMovement()
+    {
+        // 방 배정 해제
+        if (currentRoomIndex != -1)
+        {
+            lock (lockObject)
+            {
+                if (currentRoomIndex >= 0 && currentRoomIndex < roomList.Count)
+                {
+                    roomList[currentRoomIndex].isOccupied = false;
+                    Debug.Log($"AI {gameObject.name}: 선베드 이동 실패로 방 {currentRoomIndex + 1}번 반납");
+                }
+                currentRoomIndex = -1;
+            }
+        }
+        
+        // 선베드 관련 변수 정리
+        currentSunbedTransform = null;
+        preSunbedPosition = Vector3.zero;
+        preSunbedRotation = Quaternion.identity;
+        
+        // 다른 행동으로 전환
+        DetermineBehaviorByTime();
     }
 
     /// <summary>
@@ -1886,38 +1890,191 @@ public class AIAgent : MonoBehaviour
             return;
         }
 
+        // 이미 선베드 사용 중인지 확인
+        if (isUsingSunbed)
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 이미 선베드 사용 중입니다. 중복 시작 방지.");
+            return;
+        }
+
+        // NavMeshAgent 상태 체크
+        if (agent != null && !agent.isOnNavMesh)
+        {
+            Debug.LogError($"AI {gameObject.name}: NavMesh에 없어서 선베드 사용을 시작할 수 없습니다.");
+            return;
+        }
+
         Debug.Log($"AI {gameObject.name}: 선베드 {currentSunbedTransform.name}에서 사용 시작");
 
+        // 현재 위치 저장 (선베드 위치로 이동하기 전에)
+        preSunbedPosition = transform.position;
+        preSunbedRotation = transform.rotation;
+        
         // 선베드 위치와 각도로 Transform 설정
         transform.position = currentSunbedTransform.position;
         transform.rotation = currentSunbedTransform.rotation;
 
-        // NavMeshAgent 일시 정지
+        // NavMeshAgent는 끄지 않고 이동만 중지
         if (agent != null)
         {
-            agent.enabled = false;
+            agent.isStopped = true;
+            Debug.Log($"AI {gameObject.name}: NavMeshAgent 이동 중지 (enabled 유지)");
         }
 
         // 선베드 사용 상태 설정
         isUsingSunbed = true;
         TransitionToState(AIState.UsingSunbed);
         
-        // 1시간 후 자동으로 선베드 사용 종료
-        sunbedCoroutine = StartCoroutine(SunbedUsageTimer());
+        // 타이머가 없다면 다시 시작 (안전장치)
+        if (sunbedCoroutine == null)
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 선베드 타이머가 없어서 다시 시작합니다.");
+            sunbedCoroutine = StartCoroutine(SunbedUsageTimer());
+        }
+        
+        // BedTime 애니메이션 시작
+        if (animator != null)
+        {
+            animator.SetBool("BedTime", true);
+            Debug.Log($"AI {gameObject.name}: BedTime 애니메이션 시작");
+        }
         
         Debug.Log($"AI {gameObject.name}: 선베드 사용 상태로 전환 완료");
     }
 
     /// <summary>
-    /// 선베드 사용 시간 타이머 (50분)
+    /// 선베드 사용 시간 타이머 (게임 시간 50분)
     /// </summary>
     private IEnumerator SunbedUsageTimer()
     {
-        // 50분 대기 (실제 게임에서는 50분 = 50초로 설정)
-        yield return new WaitForSeconds(50f);
+        Debug.Log($"AI {gameObject.name}: 선베드 타이머 시작!");
         
-        // 50분 후 선베드 사용 종료
-        FinishUsingSunbed();
+        // TimeSystem 안전성 체크
+        if (timeSystem == null)
+        {
+            timeSystem = TimeSystem.Instance;
+            if (timeSystem == null)
+            {
+                Debug.LogError($"AI {gameObject.name}: TimeSystem을 찾을 수 없습니다. 안전장치로 실시간 50초 후 종료.");
+                yield return new WaitForSeconds(50f);
+                if (isUsingSunbed) FinishUsingSunbed();
+                sunbedCoroutine = null;
+                yield break;
+            }
+        }
+
+        // 게임 시간으로 50분 대기
+        int startHour = timeSystem.CurrentHour;
+        int startMinute = timeSystem.CurrentMinute;
+        int startTotalMinutes = startHour * 60 + startMinute;
+        
+        Debug.Log($"AI {gameObject.name}: 선베드 사용 시작 - 게임 시간 {startHour:00}:{startMinute:00}");
+        
+        // 50분 후의 시간 계산
+        int targetTotalMinutes = startTotalMinutes + 50;
+        int targetHour = (targetTotalMinutes / 60) % 24;
+        int targetMinute = targetTotalMinutes % 60;
+        
+        Debug.Log($"AI {gameObject.name}: 선베드 사용 종료 예정 - 게임 시간 {targetHour:00}:{targetMinute:00}");
+        
+        // 안전장치: 최대 대기 시간 (실제 시간 10분)
+        float maxWaitTime = 600f;
+        float elapsedTime = 0f;
+        float checkInterval = 0.5f; // 0.5초마다 체크 (빠른 감지)
+        
+        // 게임 시간이 목표 시간에 도달할 때까지 대기
+        while (isUsingSunbed && elapsedTime < maxWaitTime)
+        {
+            // TimeSystem 재확인
+            if (timeSystem == null)
+            {
+                timeSystem = TimeSystem.Instance;
+                if (timeSystem == null)
+                {
+                    Debug.LogError($"AI {gameObject.name}: TimeSystem이 사라졌습니다. 선베드 사용 강제 종료.");
+                    break;
+                }
+            }
+            
+            int currentHour = timeSystem.CurrentHour;
+            int currentMinute = timeSystem.CurrentMinute;
+            int currentTotalMinutes = currentHour * 60 + currentMinute;
+            
+            // 디버그: 주기적으로 시간 상태 출력
+            if ((int)elapsedTime % 10 == 0 && elapsedTime > 0)
+            {
+                Debug.Log($"AI {gameObject.name}: 선베드 타이머 체크 - 현재: {currentHour:00}:{currentMinute:00}, 목표: {targetHour:00}:{targetMinute:00}");
+            }
+            
+            // 16시 이후 강제 종료 (15시까지만 선베드 사용 가능)
+            if (currentHour >= 16)
+            {
+                Debug.Log($"AI {gameObject.name}: 16시 이후 도달로 선베드 사용 강제 종료 (현재: {currentHour:00}:{currentMinute:00})");
+                break;
+            }
+            
+            // 목표 시간 도달 체크
+            bool timeReached = false;
+            
+            // 같은 날인 경우 (자정을 넘지 않음)
+            if (targetTotalMinutes < 1440) // 1440분 = 24시간
+            {
+                if (currentTotalMinutes >= targetTotalMinutes)
+                {
+                    timeReached = true;
+                    Debug.Log($"AI {gameObject.name}: 목표 시간 도달, 선베드 사용 종료 (목표: {targetHour:00}:{targetMinute:00}, 현재: {currentHour:00}:{currentMinute:00})");
+                }
+            }
+            else
+            {
+                // 다음 날로 넘어가는 경우
+                int nextDayTargetMinutes = targetTotalMinutes - 1440;
+                if (currentTotalMinutes >= nextDayTargetMinutes || currentTotalMinutes < startTotalMinutes)
+                {
+                    timeReached = true;
+                    Debug.Log($"AI {gameObject.name}: 다음 날 목표 시간 도달, 선베드 사용 종료 (목표: {targetHour:00}:{targetMinute:00}, 현재: {currentHour:00}:{currentMinute:00})");
+                }
+            }
+            
+            // 시간이 크게 점프한 경우 감지 (게임 시간 빨리 감기)
+            int timeDifference = currentTotalMinutes - startTotalMinutes;
+            if (timeDifference < 0) timeDifference += 1440; // 하루 넘어간 경우 보정
+            
+            if (timeDifference >= 50) // 50분 이상 지났으면
+            {
+                timeReached = true;
+                Debug.Log($"AI {gameObject.name}: 시간 점프 감지로 선베드 사용 종료 (경과: {timeDifference}분, 현재: {currentHour:00}:{currentMinute:00})");
+            }
+            
+            if (timeReached)
+            {
+                break;
+            }
+            
+            yield return new WaitForSeconds(checkInterval);
+            elapsedTime += checkInterval;
+        }
+        
+        // 안전장치: 최대 대기 시간 초과 시 강제 종료
+        if (elapsedTime >= maxWaitTime)
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 선베드 타이머 최대 대기 시간 초과, 강제 종료");
+        }
+        
+        // 선베드 사용 종료
+        Debug.Log($"AI {gameObject.name}: 선베드 타이머 완료, 사용 종료 시작");
+        if (isUsingSunbed)
+        {
+            FinishUsingSunbed();
+        }
+        else
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 타이머 완료 시점에 이미 선베드 사용이 끝난 상태");
+        }
+        
+        // 코루틴 참조 정리
+        sunbedCoroutine = null;
+        Debug.Log($"AI {gameObject.name}: 선베드 타이머 코루틴 완전 종료");
     }
 
     /// <summary>
@@ -1925,35 +2082,124 @@ public class AIAgent : MonoBehaviour
     /// </summary>
     private void FinishUsingSunbed()
     {
+        Debug.Log($"AI {gameObject.name}: FinishUsingSunbed 호출됨 - isUsingSunbed: {isUsingSunbed}");
+        
         if (!isUsingSunbed)
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 선베드 사용 중이 아닌데 종료 시도");
             return;
+        }
 
-        Debug.Log($"AI {gameObject.name}: 선베드 사용 완료");
+        Debug.Log($"AI {gameObject.name}: 선베드 사용 종료 시작");
 
         // 1. BedTime 애니메이션 종료
         if (animator != null)
         {
             animator.SetBool("BedTime", false);
+            Debug.Log($"AI {gameObject.name}: BedTime 애니메이션 종료 완료");
         }
-
-        // 2. NavMeshAgent 다시 활성화
-        if (agent != null)
+        else
         {
-            agent.enabled = true;
+            Debug.LogWarning($"AI {gameObject.name}: Animator가 null입니다");
         }
 
-        // 3. 저장된 위치로 복귀
+        // 2. 저장된 위치로 복귀
+        Debug.Log($"AI {gameObject.name}: 위치 복귀 시작 - 현재: {transform.position}, 복귀할 위치: {preSunbedPosition}");
         transform.position = preSunbedPosition;
         transform.rotation = preSunbedRotation;
+        Debug.Log($"AI {gameObject.name}: 이전 위치로 복귀 완료");
 
-        // 4. 선베드 사용 상태 해제
+        // 3. NavMeshAgent 이동 재시작
+        if (agent != null)
+        {
+            agent.isStopped = false;
+            Debug.Log($"AI {gameObject.name}: NavMeshAgent 이동 재시작");
+        }
+        else
+        {
+            Debug.LogWarning($"AI {gameObject.name}: NavMeshAgent가 null입니다");
+        }
+
+        // 4. 선베드 사용 상태 해제 (안전하게)
         isUsingSunbed = false;
         currentSunbedTransform = null;
+        Debug.Log($"AI {gameObject.name}: 선베드 상태 변수 정리 완료");
 
         // 5. 선베드 결제 처리
+        Debug.Log($"AI {gameObject.name}: 선베드 결제 처리 시작");
         ProcessSunbedPayment();
         
-        Debug.Log($"AI {gameObject.name}: 선베드 사용 종료, 결제 및 방 반납 처리");
+        Debug.Log($"AI {gameObject.name}: 선베드 사용 완료, 모든 절차 종료");
+    }
+
+    /// <summary>
+    /// GameObject 비활성화 시 코루틴 없이 선베드 결제를 직접 처리합니다.
+    /// </summary>
+    private void ProcessSunbedPaymentDirectly()
+    {
+        Debug.Log($"AI {gameObject.name}: ProcessSunbedPaymentDirectly 호출");
+        
+        if (currentRoomIndex < 0 || currentRoomIndex >= roomList.Count)
+        {
+            Debug.LogError($"AI {gameObject.name}: 잘못된 룸 인덱스 {currentRoomIndex}.");
+            return;
+        }
+
+        var room = roomList[currentRoomIndex];
+        if (room == null || room.gameObject == null)
+        {
+            Debug.LogError($"AI {gameObject.name}: 룸 정보가 null입니다.");
+            return;
+        }
+
+        var roomContents = room.gameObject.GetComponent<RoomContents>();
+        if (roomContents != null && roomContents.isSunbedRoom)
+        {
+            // 선베드 방의 고정 가격과 명성도 사용
+            int price = roomContents.TotalRoomPrice;
+            int reputation = roomContents.TotalRoomReputation;
+            
+            Debug.Log($"AI {gameObject.name}: 선베드 결제 처리 - 가격: {price}원, 명성도: {reputation}");
+            
+            // PaymentSystem을 통한 실제 결제 처리
+            var paymentSystem = PaymentSystem.Instance;
+            if (paymentSystem != null)
+            {
+                // 결제 정보를 PaymentSystem에 추가
+                paymentSystem.AddPayment(gameObject.name, price, roomContents.roomID, reputation);
+                
+                // 결제 처리 실행
+                int totalAmount = paymentSystem.ProcessPayment(gameObject.name);
+                
+                Debug.Log($"AI {gameObject.name}: 선베드 결제 완료 - 총 금액: {totalAmount}원, 명성도: {reputation}");
+            }
+            else
+            {
+                Debug.LogError($"AI {gameObject.name}: PaymentSystem을 찾을 수 없습니다!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 선베드 방 정보를 찾을 수 없습니다.");
+        }
+
+        // 방 사용 완료 처리 (선베드 사용 완료 후 방 반납)
+        if (currentRoomIndex != -1)
+        {
+            lock (lockObject)
+            {
+                if (currentRoomIndex >= 0 && currentRoomIndex < roomList.Count)
+                {
+                    roomList[currentRoomIndex].isOccupied = false;
+                    Debug.Log($"AI {gameObject.name}: 선베드 방 {currentRoomIndex + 1}번 반납 완료.");
+                }
+                // currentRoomIndex를 -1로 설정하여 방 사용 완료 처리
+                currentRoomIndex = -1;
+            }
+        }
+
+        // GameObject가 비활성화 상태이므로 상태 전환하지 않음
+        Debug.Log($"AI {gameObject.name}: 선베드 결제 및 방 반납 완료 (비활성화 상태)");
     }
     
     /// <summary>
@@ -1962,7 +2208,10 @@ public class AIAgent : MonoBehaviour
     private void ForceFinishUsingSunbed()
     {
         if (!isUsingSunbed)
+        {
+            Debug.LogWarning($"AI {gameObject.name}: 선베드 사용 중이 아닌데 강제 종료 시도");
             return;
+        }
 
         Debug.Log($"AI {gameObject.name}: 17시 강제 선베드 사용 종료");
 
@@ -1972,22 +2221,22 @@ public class AIAgent : MonoBehaviour
             animator.SetBool("BedTime", false);
         }
 
-        // 2. NavMeshAgent 다시 활성화
+        // 2. NavMeshAgent 이동 재시작
         if (agent != null)
         {
-            agent.enabled = true;
+            agent.isStopped = false;
         }
 
         // 3. 저장된 위치로 복귀
         transform.position = preSunbedPosition;
         transform.rotation = preSunbedRotation;
 
-        // 4. 선베드 사용 상태 해제
+        // 4. 선베드 사용 상태 해제 (안전하게)
         isUsingSunbed = false;
         currentSunbedTransform = null;
 
         // 5. 선베드 결제 처리 (강제 종료 시에도 결제)
-        ProcessSunbedPayment();
+        ProcessSunbedPayment(true);  // 강제 디스폰 플래그 전달
         
         Debug.Log($"AI {gameObject.name}: 17시 강제 선베드 사용 종료, 결제 및 방 반납 처리");
     }
@@ -1995,7 +2244,7 @@ public class AIAgent : MonoBehaviour
     /// <summary>
     /// 선베드 결제를 처리합니다.
     /// </summary>
-    private void ProcessSunbedPayment()
+    private void ProcessSunbedPayment(bool isForcedDespawn = false)
     {
         if (currentRoomIndex < 0 || currentRoomIndex >= roomList.Count)
         {
@@ -2019,17 +2268,31 @@ public class AIAgent : MonoBehaviour
             int price = roomContents.TotalRoomPrice;
             int reputation = roomContents.TotalRoomReputation;
             
-            Debug.Log($"AI {gameObject.name}: 선베드 결제 완료 - 가격: {price}원, 명성도: {reputation}");
+            Debug.Log($"AI {gameObject.name}: 선베드 결제 시작 - 가격: {price}원, 명성도: {reputation}");
             
-            // 여기서 실제 결제 시스템에 연동할 수 있습니다
-            // 예: PaymentSystem.ProcessPayment(price, reputation);
+            // PaymentSystem을 통한 실제 결제 처리
+            var paymentSystem = PaymentSystem.Instance;
+            if (paymentSystem != null)
+            {
+                // 결제 정보를 PaymentSystem에 추가
+                paymentSystem.AddPayment(gameObject.name, price, roomContents.roomID, reputation);
+                
+                // 결제 처리 실행
+                int totalAmount = paymentSystem.ProcessPayment(gameObject.name);
+                
+                Debug.Log($"AI {gameObject.name}: 선베드 결제 완료 - 총 금액: {totalAmount}원, 명성도: {reputation}");
+            }
+            else
+            {
+                Debug.LogError($"AI {gameObject.name}: PaymentSystem을 찾을 수 없습니다!");
+            }
         }
         else
         {
             Debug.LogWarning($"AI {gameObject.name}: 선베드 방 정보를 찾을 수 없습니다.");
         }
 
-        // 방 사용 완료 처리 (선베드 사용 완료 후에도 방을 계속 사용 중으로 유지)
+        // 방 사용 완료 처리 (선베드 사용 완료 후 방 반납)
         if (currentRoomIndex != -1)
         {
             lock (lockObject)
@@ -2039,13 +2302,25 @@ public class AIAgent : MonoBehaviour
                     roomList[currentRoomIndex].isOccupied = false;
                     Debug.Log($"AI {gameObject.name}: 선베드 방 {currentRoomIndex + 1}번 반납 완료.");
                 }
-                // currentRoomIndex = -1; // 방을 계속 사용 중으로 유지하여 매시간 선베드 사용 가능
+                // currentRoomIndex를 -1로 설정하여 방 사용 완료 처리
+                currentRoomIndex = -1;
             }
         }
 
-        // 결제 및 방 반납 완료 후 배회로 전환
-        TransitionToState(AIState.Wandering);
-        Debug.Log($"AI {gameObject.name}: 선베드 사용 완료, 배회로 전환");
+        // 결제 및 방 반납 완료 후 상태 전환
+        if (isForcedDespawn)
+        {
+            // 17시 강제 디스폰인 경우 디스폰 상태로 전환
+            TransitionToState(AIState.ReturningToSpawn);
+            agent.SetDestination(spawnPoint.position);
+            Debug.Log($"AI {gameObject.name}: 선베드 사용 완료, 17시 강제 디스폰 시작");
+        }
+        else
+        {
+            // 일반적인 경우 배회로 전환
+            TransitionToState(AIState.Wandering);
+            Debug.Log($"AI {gameObject.name}: 선베드 사용 완료, 배회로 전환");
+        }
     }
     #endregion
 
@@ -2214,10 +2489,11 @@ public class AIAgent : MonoBehaviour
         transform.position = currentChairTransform.position;
         transform.rotation = currentChairTransform.rotation;
 
-        // NavMeshAgent 일시 정지
+        // NavMeshAgent는 끄지 않고 이동만 중지
         if (agent != null)
         {
-            agent.enabled = false;
+            agent.isStopped = true;
+            Debug.Log($"AI {gameObject.name}: 식사 시 NavMeshAgent 이동 중지 (enabled 유지)");
         }
 
         // 식사 상태 설정
@@ -2252,10 +2528,11 @@ public class AIAgent : MonoBehaviour
 
         Debug.Log($"AI {gameObject.name}: 식사 완료");
 
-        // NavMeshAgent 다시 활성화
+        // NavMeshAgent 이동 재시작
         if (agent != null)
         {
-            agent.enabled = true;
+            agent.isStopped = false;
+            Debug.Log($"AI {gameObject.name}: 식사 종료 - NavMeshAgent 이동 재시작");
         }
 
         // 저장된 위치로 복귀
@@ -2394,7 +2671,8 @@ public class AIAgent : MonoBehaviour
             StopCoroutine(sleepingCoroutine);
             sleepingCoroutine = null;
         }
-        if (sunbedCoroutine != null)
+        // sunbedCoroutine은 UsingSunbed 상태에서도 유지되어야 함
+        if (sunbedCoroutine != null && currentState != AIState.UsingSunbed)
         {
             StopCoroutine(sunbedCoroutine);
             sunbedCoroutine = null;
@@ -2416,16 +2694,63 @@ public class AIAgent : MonoBehaviour
             WakeUp();
         }
         
-        // 선베드 사용 상태 정리
+        // 선베드 사용 상태 정리 (애니메이션 지연 없이 직접 정리)
         if (isUsingSunbed)
         {
-            FinishUsingSunbed();
+            Debug.Log($"AI {gameObject.name}: CleanupResources에서 선베드 상태 정리");
+            
+            // 1. BedTime 애니메이션 종료
+            if (animator != null)
+            {
+                animator.SetBool("BedTime", false);
+                Debug.Log($"AI {gameObject.name}: BedTime 애니메이션 종료");
+            }
+
+            // 2. 저장된 위치로 복귀
+            transform.position = preSunbedPosition;
+            transform.rotation = preSunbedRotation;
+            Debug.Log($"AI {gameObject.name}: 이전 위치로 복귀");
+
+            // 3. NavMeshAgent 이동 재시작
+            if (agent != null)
+            {
+                agent.isStopped = false;
+                Debug.Log($"AI {gameObject.name}: NavMeshAgent 이동 재시작");
+            }
+
+            // 4. 선베드 사용 상태 해제
+            isUsingSunbed = false;
+            currentSunbedTransform = null;
+
+            // 5. 선베드 결제 처리 (GameObject 비활성화 시에는 코루틴 시작 없이)
+            ProcessSunbedPaymentDirectly();
+            
+            Debug.Log($"AI {gameObject.name}: 선베드 사용 완료, 상태 정리 완료");
         }
         
-        // 식사 상태 정리
+        // 식사 상태 정리 (GameObject 비활성화 시에는 코루틴 시작 없이)
         if (isEating)
         {
-            FinishEating();
+            Debug.Log($"AI {gameObject.name}: CleanupResources에서 식사 상태 정리");
+            
+            // NavMeshAgent 이동 재시작
+            if (agent != null)
+            {
+                agent.isStopped = false;
+                Debug.Log($"AI {gameObject.name}: 식사 종료 - NavMeshAgent 이동 재시작");
+            }
+
+            // 저장된 위치로 복귀
+            transform.position = preChairPosition;
+            transform.rotation = preChairRotation;
+            Debug.Log($"AI {gameObject.name}: 식사 종료 - 이전 위치로 복귀");
+
+            // 식사 상태 해제
+            isEating = false;
+            currentKitchenTransform = null;
+            currentChairTransform = null;
+            
+            Debug.Log($"AI {gameObject.name}: 식사 상태 정리 완료");
         }
         
         if (currentRoomIndex != -1)
