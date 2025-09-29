@@ -28,9 +28,6 @@
             "m_Id": "52934499996f47a4b2e0d631ff96e0c0"
         },
         {
-            "m_Id": "531c61225dc54322b98255d8d680d86d"
-        },
-        {
             "m_Id": "698b79de5d6e449cb351532762d9796a"
         }
     ],
@@ -1608,7 +1605,7 @@
     "m_Title": "Foam",
     "m_Position": {
         "x": -1071.0,
-        "y": 614.9999389648438
+        "y": 615.0
     }
 }
 
@@ -3678,34 +3675,6 @@
 }
 
 {
-    "m_SGVersion": 1,
-    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
-    "m_ObjectId": "531c61225dc54322b98255d8d680d86d",
-    "m_Guid": {
-        "m_GuidSerialized": "47337c9d-9822-4041-ac4e-07d83e25a344"
-    },
-    "m_Name": "Displacement",
-    "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Displacement",
-    "m_DefaultReferenceName": "_Displacement",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
-    "m_UseCustomSlotLabel": false,
-    "m_CustomSlotLabel": "",
-    "m_DismissedVersion": 0,
-    "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
-    "m_Hidden": false,
-    "m_Value": 0.5,
-    "m_FloatType": 0,
-    "m_RangeValues": {
-        "x": 0.0,
-        "y": 1.0
-    }
-}
-
-{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
     "m_ObjectId": "5362d24228f84ac89f52a1916fb23f2c",
@@ -4226,9 +4195,6 @@
         },
         {
             "m_Id": "52934499996f47a4b2e0d631ff96e0c0"
-        },
-        {
-            "m_Id": "531c61225dc54322b98255d8d680d86d"
         },
         {
             "m_Id": "698b79de5d6e449cb351532762d9796a"

@@ -56,6 +56,12 @@ public class ManualReputationChart : MonoBehaviour
     private List<GameObject> reputationValueLabels = new List<GameObject>(); // 점 위 명성도량 라벨들
     private LineRenderer gridRenderer;
     
+    // 실시간 데이터 관리
+    private int currentDayRealtimeGold = 0;
+    private int currentDayRealtimeReputation = 0;
+    private int currentDayRealtimeVisitors = 0;
+    private int currentDay = 1; // 게임 시작 시 1일차
+    
     // 상태 관리
     private bool isPanelOpen = false;
     private float maxReputation = 50f; // 동적으로 계산될 최대값
@@ -93,6 +99,18 @@ public class ManualReputationChart : MonoBehaviour
     {
         SetupEvents();
         InitializeChart();
+        
+        // 현재 일차 초기화 (게임 시작 시 1일차)
+        if (JY.TimeSystem.Instance != null)
+        {
+            currentDay = JY.TimeSystem.Instance.CurrentDay;
+        }
+        else
+        {
+            currentDay = 1; // TimeSystem이 없으면 1일차로 설정
+        }
+        
+        DebugLog($"차트 초기화: 현재 일차 = {currentDay}");
     }
     
     private void OnDestroy()
@@ -113,17 +131,13 @@ public class ManualReputationChart : MonoBehaviour
             isPanelOpen = false;
         }
         
-        // 토글 버튼 텍스트 설정
-        if (toggleButtonText != null)
-        {
-            toggleButtonText.text = "Open Reputation Chart";
-        }
-        
         // 통계 매니저 이벤트 구독
         if (DailyStatisticsManager.Instance != null)
         {
             DailyStatisticsManager.OnDailyDataUpdated += OnDailyDataUpdated;
             DailyStatisticsManager.OnDayReset += OnDayReset;
+            DailyStatisticsManager.OnChartOpened += OnOtherChartOpened;
+            DailyStatisticsManager.OnRealtimeDataUpdated += OnRealtimeDataUpdated;
         }
         
         // 토글 버튼 이벤트
@@ -145,6 +159,8 @@ public class ManualReputationChart : MonoBehaviour
         {
             DailyStatisticsManager.OnDailyDataUpdated -= OnDailyDataUpdated;
             DailyStatisticsManager.OnDayReset -= OnDayReset;
+            DailyStatisticsManager.OnChartOpened -= OnOtherChartOpened;
+            DailyStatisticsManager.OnRealtimeDataUpdated -= OnRealtimeDataUpdated;
         }
         
         if (toggleButton != null)
@@ -198,6 +214,38 @@ public class ManualReputationChart : MonoBehaviour
         DebugLog($"스크롤 위치 변경: {value:F2}");
     }
     
+    private void OnOtherChartOpened(string chartName)
+    {
+        // 다른 차트가 열렸을 때 현재 차트가 열려있다면 닫기
+        if (isPanelOpen && chartName != "ReputationChart")
+        {
+            ClosePanel();
+            DebugLog($"다른 차트({chartName})가 열려서 명성도 차트를 닫습니다.");
+        }
+    }
+    
+    private void OnRealtimeDataUpdated(int reputationGained, int goldEarned, int visitors)
+    {
+        // 실시간 데이터 업데이트
+        currentDayRealtimeReputation = reputationGained;
+        currentDayRealtimeGold = goldEarned;
+        currentDayRealtimeVisitors = visitors;
+        
+        // 현재 일차 업데이트
+        if (JY.TimeSystem.Instance != null)
+        {
+            currentDay = JY.TimeSystem.Instance.CurrentDay;
+        }
+        
+        // 차트가 열려있으면 실시간으로 업데이트
+        if (isPanelOpen)
+        {
+            UpdateRealtimeChart();
+        }
+        
+        DebugLog($"실시간 데이터 업데이트: Day {currentDay}, Gold+{goldEarned}, Rep+{reputationGained}, Visitors:{visitors}");
+    }
+    
     #endregion
     
     #region Chart Management
@@ -226,19 +274,23 @@ public class ManualReputationChart : MonoBehaviour
     
     private void RefreshChart()
     {
-        if (!isPanelOpen || reputationData.Count == 0) return;
+        if (!isPanelOpen) return;
+        
+        // 실시간 데이터와 저장된 데이터를 합쳐서 차트 생성
+        var combinedData = GetCombinedData();
+        if (combinedData.Count == 0) return;
         
         // 최대값 계산
-        CalculateMaxReputation();
+        CalculateMaxReputation(combinedData);
         
         // 컨텐츠 영역 크기 조정
-        UpdateContentSize();
+        UpdateContentSize(combinedData);
         
         // 기존 차트 요소들 정리
         ClearChart();
         
         // 새 차트 요소들 생성
-        CreateChartPoints();
+        CreateChartPoints(combinedData);
         CreateDayLabels();
         CreateReputationValueLabels(); // 각 포인트 위에 명성도량 표시
         CreateReputationLabels(); // Y축 라벨을 데이터에 맞춰서 동적 생성
@@ -250,16 +302,75 @@ public class ManualReputationChart : MonoBehaviour
         }
     }
     
-    private void CalculateMaxReputation()
+    /// <summary>
+    /// 실시간 데이터와 저장된 데이터를 합쳐서 반환
+    /// </summary>
+    private List<DailyData> GetCombinedData()
     {
+        var combinedData = new List<DailyData>(reputationData);
+        
+        // 현재 일차의 실시간 데이터 추가/업데이트 (값이 0이어도 현재 일차는 표시)
+        var existingCurrentDay = combinedData.Find(d => d.day == currentDay);
+        if (existingCurrentDay != null)
+        {
+            // 기존 데이터 업데이트
+            existingCurrentDay.goldEarned = currentDayRealtimeGold;
+            existingCurrentDay.reputationGained = currentDayRealtimeReputation;
+            existingCurrentDay.totalVisitors = currentDayRealtimeVisitors;
+        }
+        else
+        {
+            // 새 데이터 추가 (현재 일차는 값이 0이어도 표시)
+            combinedData.Add(new DailyData(currentDay, currentDayRealtimeReputation, currentDayRealtimeGold, 
+                                         currentDayRealtimeVisitors, 0, 0, 0, 0));
+        }
+        
+        // 일차순으로 정렬
+        combinedData.Sort((a, b) => a.day.CompareTo(b.day));
+        
+        return combinedData;
+    }
+    
+    /// <summary>
+    /// 실시간 차트 업데이트
+    /// </summary>
+    private void UpdateRealtimeChart()
+    {
+        if (!isPanelOpen) return;
+        
+        // 현재 일차의 실시간 데이터만 업데이트
+        var combinedData = GetCombinedData();
+        if (combinedData.Count == 0) return;
+        
+        // 최대값 재계산
+        CalculateMaxReputation(combinedData);
+        
+        // 현재 일차의 포인트만 업데이트
+        UpdateCurrentDayPoint(combinedData);
+        
+        // Y축 라벨 업데이트
+        UpdateReputationLabels();
+        
+        // 그리드 업데이트
+        if (showGrid)
+        {
+            UpdateGrid();
+        }
+    }
+    
+    private void CalculateMaxReputation(List<DailyData> data = null)
+    {
+        if (data == null)
+            data = reputationData;
+            
         float actualMaxReputation = 0f;
         
         // 실제 최대 명성도 획득량 찾기
-        foreach (var data in reputationData)
+        foreach (var item in data)
         {
-            if (data.reputationGained > actualMaxReputation)
+            if (item.reputationGained > actualMaxReputation)
             {
-                actualMaxReputation = data.reputationGained;
+                actualMaxReputation = item.reputationGained;
             }
         }
         
@@ -276,9 +387,12 @@ public class ManualReputationChart : MonoBehaviour
         DebugLog($"최대 명성도 획득량 계산: 실제={actualMaxReputation}, 스케일={maxReputation}");
     }
     
-    private void UpdateContentSize()
+    private void UpdateContentSize(List<DailyData> data = null)
     {
-        totalDays = reputationData.Count;
+        if (data == null)
+            data = reputationData;
+            
+        totalDays = data.Count;
         // 고정 간격 기반으로 필요한 너비 계산
         float requiredWidth = chartMarginLeft + chartMarginRight;
         if (totalDays > 0)
@@ -347,29 +461,136 @@ public class ManualReputationChart : MonoBehaviour
         reputationLabels.Clear();
     }
     
-    private void CreateChartPoints()
+    private void CreateChartPoints(List<DailyData> data = null)
     {
-        for (int i = 0; i < reputationData.Count; i++)
+        if (data == null)
+            data = reputationData;
+            
+        for (int i = 0; i < data.Count; i++)
         {
-            var data = reputationData[i];
+            var item = data[i];
             
             // X 좌표 계산 (고정된 daySpacing 간격으로)
             float x = ChartStartX + i * daySpacing;
             
             // Y 좌표 계산 (0~maxReputation를 차트 높이에 매핑)
-            float normalizedY = data.reputationGained / maxReputation; // 0~1로 정규화
+            float normalizedY = item.reputationGained / maxReputation; // 0~1로 정규화
             float y = ChartStartY + normalizedY * ActualChartHeight;
             
             Vector2 position = new Vector2(x, y);
             
             // 차트 포인트 생성
-            ChartPoint chartPoint = new ChartPoint(data.day, data.reputationGained, position);
-            chartPoint.pointObject = CreatePointObject(position, data);
+            ChartPoint chartPoint = new ChartPoint(item.day, item.reputationGained, position);
+            chartPoint.pointObject = CreatePointObject(position, item);
             
-            chartPoints[data.day] = chartPoint;
+            chartPoints[item.day] = chartPoint;
         }
         
         DebugLog($"명성도 차트 포인트 생성 완료: {chartPoints.Count}개 (간격: {daySpacing}, 영역: {ActualChartWidth}x{ActualChartHeight})");
+    }
+    
+    /// <summary>
+    /// 현재 일차의 포인트만 업데이트
+    /// </summary>
+    private void UpdateCurrentDayPoint(List<DailyData> data)
+    {
+        var currentDayData = data.Find(d => d.day == currentDay);
+        if (currentDayData == null) return;
+        
+        // 현재 일차의 인덱스 찾기
+        int currentDayIndex = data.FindIndex(d => d.day == currentDay);
+        if (currentDayIndex == -1) return;
+        
+        // X 좌표 계산
+        float x = ChartStartX + currentDayIndex * daySpacing;
+        
+        // Y 좌표 계산
+        float normalizedY = currentDayData.reputationGained / maxReputation;
+        float y = ChartStartY + normalizedY * ActualChartHeight;
+        
+        Vector2 position = new Vector2(x, y);
+        
+        // 기존 포인트가 있으면 업데이트, 없으면 새로 생성
+        if (chartPoints.ContainsKey(currentDay))
+        {
+            var existingPoint = chartPoints[currentDay];
+            existingPoint.reputation = currentDayData.reputationGained;
+            existingPoint.position = position;
+            
+            if (existingPoint.pointObject != null)
+            {
+                var rectTransform = existingPoint.pointObject.GetComponent<RectTransform>();
+                if (rectTransform != null)
+                {
+                    rectTransform.anchoredPosition = position;
+                }
+            }
+        }
+        else
+        {
+            // 새 포인트 생성
+            ChartPoint chartPoint = new ChartPoint(currentDay, currentDayData.reputationGained, position);
+            chartPoint.pointObject = CreatePointObject(position, currentDayData);
+            chartPoints[currentDay] = chartPoint;
+        }
+        
+        // 명성도량 라벨도 업데이트
+        UpdateCurrentDayValueLabel(currentDayData.reputationGained, position);
+        
+        DebugLog($"현재 일차 포인트 업데이트: Day {currentDay}, Rep+{currentDayData.reputationGained}");
+    }
+    
+    /// <summary>
+    /// 현재 일차의 값 라벨 업데이트
+    /// </summary>
+    private void UpdateCurrentDayValueLabel(int reputation, Vector2 position)
+    {
+        // 현재 일차의 기존 라벨 찾기 (값이 아닌 일차로 찾기)
+        var existingLabel = reputationValueLabels.Find(label => 
+            label != null && label.name == $"ReputationValueLabel_Day{currentDay}");
+        
+        if (existingLabel != null)
+        {
+            // 기존 라벨의 텍스트와 위치 업데이트
+            var textComponent = existingLabel.GetComponent<TextMeshProUGUI>();
+            if (textComponent != null)
+            {
+                textComponent.text = reputation.ToString();
+            }
+            
+            var rectTransform = existingLabel.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                rectTransform.anchoredPosition = new Vector2(position.x, position.y + 25);
+            }
+        }
+        else
+        {
+            // 새 라벨 생성 (일차로 이름 지정)
+            Vector2 labelPosition = new Vector2(position.x, position.y + 25);
+            GameObject valueLabel = CreateReputationValueLabel(reputation, labelPosition);
+            valueLabel.name = $"ReputationValueLabel_Day{currentDay}"; // 일차로 이름 변경
+            reputationValueLabels.Add(valueLabel);
+        }
+    }
+    
+    /// <summary>
+    /// Y축 라벨 업데이트
+    /// </summary>
+    private void UpdateReputationLabels()
+    {
+        // 기존 라벨들 정리
+        foreach (var label in reputationLabels)
+        {
+            if (label != null)
+            {
+                DestroyImmediate(label);
+            }
+        }
+        reputationLabels.Clear();
+        
+        // 새 라벨들 생성
+        CreateReputationLabels();
     }
     
     private GameObject CreatePointObject(Vector2 position, DailyData data)
@@ -589,13 +810,11 @@ public class ManualReputationChart : MonoBehaviour
     {
         if (chartPanel != null)
         {
-            chartPanel.SetActive(true);
-            isPanelOpen = true;
+            // 다른 차트가 열려있다면 닫도록 알림
+            DailyStatisticsManager.NotifyChartOpened("ReputationChart");
             
-            if (toggleButtonText != null)
-            {
-                toggleButtonText.text = "Close Reputation Chart";
-            }
+            chartPanel.SetActive(true);
+            isPanelOpen = true;            
             
             RefreshChart();
         }
@@ -607,11 +826,6 @@ public class ManualReputationChart : MonoBehaviour
         {
             chartPanel.SetActive(false);
             isPanelOpen = false;
-            
-            if (toggleButtonText != null)
-            {
-                toggleButtonText.text = "Open Reputation Chart";
-            }
         }
     }
     

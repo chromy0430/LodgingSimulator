@@ -63,6 +63,13 @@ public class DailyStatisticsManager : MonoBehaviour
     public static event Action<DailyData> OnDailyDataUpdated;
     public static event Action OnDayReset;
     
+    // 실시간 데이터 업데이트 이벤트
+    public static event Action<int, int, int> OnRealtimeDataUpdated; // 명성도, 골드, 방문객수
+    
+    // 차트 관리 이벤트
+    public static event Action<string> OnChartOpened;
+    public static event Action OnAllChartsClosed;
+    
     // 파일 경로
     private string filePath;
     
@@ -101,12 +108,24 @@ public class DailyStatisticsManager : MonoBehaviour
             int currentDay = JY.TimeSystem.Instance != null ? JY.TimeSystem.Instance.CurrentDay : 1;
             currentDayStatistics = statisticsContainer.GetOrCreateDailyStatistics(currentDay);
             UpdateCurrentValues();
-            startingReputation = currentReputation;
-            startingGold = currentGold;
+            
+            // PlayerWallet이 준비되지 않았으면 기본값 사용
+            if (PlayerWallet.Instance == null)
+            {
+                DebugLog("PlayerWallet이 아직 준비되지 않음. 기본값으로 초기화", true);
+                startingReputation = 0;
+                startingGold = 0;
+            }
+            else
+            {
+                startingReputation = currentReputation;
+                startingGold = currentGold;
+            }
+            
             totalVisitorsToday = 0;
             currentActiveVisitors = 0;
             lastActiveVisitorCount = 0;
-            DebugLog($"현재 날 통계 초기화: {currentDay}일차", true);
+            DebugLog($"현재 날 통계 초기화: {currentDay}일차, StartingGold: {startingGold}", true);
         }
         
         if (enableAutoSave)
@@ -281,6 +300,10 @@ public class DailyStatisticsManager : MonoBehaviour
     /// </summary>
     private void UpdateCurrentValues()
     {
+        int previousReputation = currentReputation;
+        int previousGold = currentGold;
+        int previousVisitors = currentActiveVisitors;
+        
         // ReputationSystem에서 현재 명성도 가져오기
         if (JY.ReputationSystem.Instance != null)
         {
@@ -291,12 +314,43 @@ public class DailyStatisticsManager : MonoBehaviour
         if (PlayerWallet.Instance != null)
         {
             currentGold = PlayerWallet.Instance.money;
+            
+            // startingGold가 0이고 현재 골드가 0이 아니면 startingGold 설정
+            if (startingGold == 0 && currentGold > 0)
+            {
+                startingGold = currentGold;
+                startingReputation = currentReputation;
+                DebugLog($"PlayerWallet 준비됨 - StartingGold 설정: {startingGold}", true);
+            }
         }
         
         // AISpawner에서 현재 활성 방문객 수 가져오기
         if (JY.AISpawner.Instance != null)
         {
             currentActiveVisitors = JY.AISpawner.Instance.GetActiveAICount();
+        }
+        
+        // 값이 변경되었으면 실시간 이벤트 발생
+        if (previousReputation != currentReputation || 
+            previousGold != currentGold || 
+            previousVisitors != currentActiveVisitors)
+        {
+            NotifyRealtimeDataUpdate();
+        }
+    }
+    
+    /// <summary>
+    /// 실시간 데이터 업데이트 알림
+    /// </summary>
+    private void NotifyRealtimeDataUpdate()
+    {
+        if (currentDayStatistics != null)
+        {
+            // 현재 일의 실시간 데이터 계산
+            int reputationGained = currentReputation - startingReputation;
+            int goldEarned = currentGold - startingGold;
+            
+            OnRealtimeDataUpdated?.Invoke(reputationGained, goldEarned, totalVisitorsToday);
         }
     }
     
@@ -320,6 +374,9 @@ public class DailyStatisticsManager : MonoBehaviour
             }
             
             DebugLog($"방문객 수 증가: +{visitorDifference}명 (총: {totalVisitorsToday}명)", true);
+            
+            // 실시간 이벤트 발생
+            NotifyRealtimeDataUpdate();
         }
         else if (visitorDifference < 0)
         {
@@ -409,6 +466,9 @@ public class DailyStatisticsManager : MonoBehaviour
         
         currentDayStatistics.startingReputation = startingReputation;
         currentDayStatistics.startingGold = startingGold;
+        
+        // 새 날 시작 시 실시간 데이터 초기화 이벤트 발생
+        NotifyRealtimeDataUpdate();
         
         DebugLog($"새 날 시작: {currentDay}일차 (0시)", true);
         DebugLog($"시작값 설정 - Rep:{startingReputation}, Gold:{startingGold}", true);
@@ -606,6 +666,28 @@ public class DailyStatisticsManager : MonoBehaviour
     {
         return statisticsContainer?.GetDailyStatistics(day);
     }
+    
+    #region Chart Management
+    
+    /// <summary>
+    /// 차트가 열렸을 때 호출되는 메서드
+    /// 다른 모든 차트를 닫도록 이벤트 발생
+    /// </summary>
+    /// <param name="chartName">열린 차트 이름</param>
+    public static void NotifyChartOpened(string chartName)
+    {
+        OnChartOpened?.Invoke(chartName);
+    }
+    
+    /// <summary>
+    /// 모든 차트가 닫혔을 때 호출되는 메서드
+    /// </summary>
+    public static void NotifyAllChartsClosed()
+    {
+        OnAllChartsClosed?.Invoke();
+    }
+    
+    #endregion
     
     /// <summary>
     /// 가장 최근 통계를 가져옴

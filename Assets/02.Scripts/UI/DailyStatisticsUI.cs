@@ -15,10 +15,7 @@ public class DailyStatisticsUI : MonoBehaviour
     [SerializeField] private GameObject statisticsPanel;
     
     [Tooltip("패널 열기/닫기 버튼")]
-    [SerializeField] private Button toggleButton;
-    
-    [Tooltip("패널 열기/닫기 버튼 텍스트")]
-    [SerializeField] private TextMeshProUGUI toggleButtonText;
+    [SerializeField] private Button toggleButton;    
     
     [Header("차트 영역")]
     [Tooltip("명성도 차트 영역")]
@@ -373,13 +370,7 @@ public class DailyStatisticsUI : MonoBehaviour
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
         textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
-        
-        toggleButtonText = textObj.AddComponent<TextMeshProUGUI>();
-        toggleButtonText.text = "Open Stats";
-        toggleButtonText.fontSize = 14;
-        toggleButtonText.color = Color.white;
-        toggleButtonText.alignment = TextAlignmentOptions.Center;
+        textRect.offsetMax = Vector2.zero;        
     }
     
     #endregion
@@ -726,12 +717,7 @@ public class DailyStatisticsUI : MonoBehaviour
         {
             statisticsPanel.SetActive(true);
             isPanelOpen = true;
-            
-            if (toggleButtonText != null)
-            {
-                toggleButtonText.text = "Close Stats";
-            }
-            
+                        
             // 패널이 열릴 때 최신 데이터로 업데이트
             UpdateCurrentValues();
             UpdateTotalValues();
@@ -751,10 +737,6 @@ public class DailyStatisticsUI : MonoBehaviour
             statisticsPanel.SetActive(false);
             isPanelOpen = false;
             
-            if (toggleButtonText != null)
-            {
-                toggleButtonText.text = "Open Stats";
-            }
             
             DebugLog("통계 패널 닫힘");
         }

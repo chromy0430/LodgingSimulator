@@ -115,6 +115,10 @@ MonoBehaviour:
     m_Key: Ingame_FloorCount
     m_Metadata:
       m_Items: []
+  - m_Id: 14501251909324800
+    m_Key: Ingame_Statistic
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

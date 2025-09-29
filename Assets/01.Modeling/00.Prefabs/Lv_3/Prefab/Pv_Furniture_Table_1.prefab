@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4372152766088787427}
   - component: {fileID: 9026412562693749120}
   - component: {fileID: 1084364859020019127}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: chair (2)
-  m_TagString: Untagged
+  m_TagString: KitchenChair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,9 +98,9 @@ GameObject:
   - component: {fileID: 391883813207769740}
   - component: {fileID: 3665819961663065385}
   - component: {fileID: 1529935919374039523}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: table for four
-  m_TagString: Untagged
+  m_TagString: KitchenTable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -183,7 +183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3113279024639087354}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -275,9 +275,9 @@ GameObject:
   - component: {fileID: 3966376991239699859}
   - component: {fileID: 7338392295284385386}
   - component: {fileID: 1347186325159591539}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: chair (3)
-  m_TagString: Untagged
+  m_TagString: KitchenChair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -362,9 +362,9 @@ GameObject:
   - component: {fileID: 2564044061850864133}
   - component: {fileID: 4449318043323449630}
   - component: {fileID: 5807520343145651919}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: chair (1)
-  m_TagString: Untagged
+  m_TagString: KitchenChair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -449,9 +449,9 @@ GameObject:
   - component: {fileID: 5880767948589790358}
   - component: {fileID: 7364358320569547571}
   - component: {fileID: 4744405412897198073}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: chair
-  m_TagString: Untagged
+  m_TagString: KitchenChair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

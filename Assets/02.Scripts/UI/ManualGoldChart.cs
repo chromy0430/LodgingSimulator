@@ -56,6 +56,12 @@ public class ManualGoldChart : MonoBehaviour
     private List<GameObject> goldValueLabels = new List<GameObject>(); // 점 위 골드량 라벨들
     private LineRenderer gridRenderer;
     
+    // 실시간 데이터 관리
+    private int currentDayRealtimeGold = 0;
+    private int currentDayRealtimeReputation = 0;
+    private int currentDayRealtimeVisitors = 0;
+    private int currentDay = 1; // 게임 시작 시 1일차
+    
     // 상태 관리
     private bool isPanelOpen = false;
     private float maxGold = 100f; // 동적으로 계산될 최대값
@@ -93,6 +99,18 @@ public class ManualGoldChart : MonoBehaviour
     {
         SetupEvents();
         InitializeChart();
+        
+        // 현재 일차 초기화 (게임 시작 시 1일차)
+        if (JY.TimeSystem.Instance != null)
+        {
+            currentDay = JY.TimeSystem.Instance.CurrentDay;
+        }
+        else
+        {
+            currentDay = 1; // TimeSystem이 없으면 1일차로 설정
+        }
+        
+        DebugLog($"차트 초기화: 현재 일차 = {currentDay}");
     }
     
     private void OnDestroy()
@@ -109,21 +127,17 @@ public class ManualGoldChart : MonoBehaviour
         // 차트 패널 초기 상태 설정
         if (chartPanel != null)
         {
-            chartPanel.SetActive(false);
+            chartPanel.SetActive(true);
             isPanelOpen = false;
         }
-        
-        // 토글 버튼 텍스트 설정
-        if (toggleButtonText != null)
-        {
-            toggleButtonText.text = "Open Gold Chart";
-        }
-        
+               
         // 통계 매니저 이벤트 구독
         if (DailyStatisticsManager.Instance != null)
         {
             DailyStatisticsManager.OnDailyDataUpdated += OnDailyDataUpdated;
             DailyStatisticsManager.OnDayReset += OnDayReset;
+            DailyStatisticsManager.OnChartOpened += OnOtherChartOpened;
+            DailyStatisticsManager.OnRealtimeDataUpdated += OnRealtimeDataUpdated;
         }
         
         // 토글 버튼 이벤트
@@ -145,6 +159,8 @@ public class ManualGoldChart : MonoBehaviour
         {
             DailyStatisticsManager.OnDailyDataUpdated -= OnDailyDataUpdated;
             DailyStatisticsManager.OnDayReset -= OnDayReset;
+            DailyStatisticsManager.OnChartOpened -= OnOtherChartOpened;
+            DailyStatisticsManager.OnRealtimeDataUpdated -= OnRealtimeDataUpdated;
         }
         
         if (toggleButton != null)
@@ -198,6 +214,38 @@ public class ManualGoldChart : MonoBehaviour
         DebugLog($"스크롤 위치 변경: {value:F2}");
     }
     
+    private void OnOtherChartOpened(string chartName)
+    {
+        // 다른 차트가 열렸을 때 현재 차트가 열려있다면 닫기
+        if (isPanelOpen && chartName != "GoldChart")
+        {
+            ClosePanel();
+            DebugLog($"다른 차트({chartName})가 열려서 골드 차트를 닫습니다.");
+        }
+    }
+    
+    private void OnRealtimeDataUpdated(int reputationGained, int goldEarned, int visitors)
+    {
+        // 실시간 데이터 업데이트
+        currentDayRealtimeReputation = reputationGained;
+        currentDayRealtimeGold = goldEarned;
+        currentDayRealtimeVisitors = visitors;
+        
+        // 현재 일차 업데이트
+        if (JY.TimeSystem.Instance != null)
+        {
+            currentDay = JY.TimeSystem.Instance.CurrentDay;
+        }
+        
+        // 차트가 열려있으면 실시간으로 업데이트
+        if (isPanelOpen)
+        {
+            UpdateRealtimeChart();
+        }
+        
+        DebugLog($"실시간 데이터 업데이트: Day {currentDay}, Gold+{goldEarned}, Rep+{reputationGained}, Visitors:{visitors}");
+    }
+    
     #endregion
     
     #region Chart Management
@@ -226,19 +274,23 @@ public class ManualGoldChart : MonoBehaviour
     
     private void RefreshChart()
     {
-        if (!isPanelOpen || goldData.Count == 0) return;
+        if (!isPanelOpen) return;
+        
+        // 실시간 데이터와 저장된 데이터를 합쳐서 차트 생성
+        var combinedData = GetCombinedData();
+        if (combinedData.Count == 0) return;
         
         // 최대값 계산
-        CalculateMaxGold();
+        CalculateMaxGold(combinedData);
         
         // 컨텐츠 영역 크기 조정
-        UpdateContentSize();
+        UpdateContentSize(combinedData);
         
         // 기존 차트 요소들 정리
         ClearChart();
         
         // 새 차트 요소들 생성
-        CreateChartPoints();
+        CreateChartPoints(combinedData);
         CreateDayLabels();
         CreateGoldValueLabels(); // 각 포인트 위에 골드량 표시
         CreateGoldLabels(); // Y축 라벨을 데이터에 맞춰서 동적 생성
@@ -250,16 +302,75 @@ public class ManualGoldChart : MonoBehaviour
         }
     }
     
-    private void CalculateMaxGold()
+    /// <summary>
+    /// 실시간 데이터와 저장된 데이터를 합쳐서 반환
+    /// </summary>
+    private List<DailyData> GetCombinedData()
     {
+        var combinedData = new List<DailyData>(goldData);
+        
+        // 현재 일차의 실시간 데이터 추가/업데이트 (값이 0이어도 현재 일차는 표시)
+        var existingCurrentDay = combinedData.Find(d => d.day == currentDay);
+        if (existingCurrentDay != null)
+        {
+            // 기존 데이터 업데이트
+            existingCurrentDay.goldEarned = currentDayRealtimeGold;
+            existingCurrentDay.reputationGained = currentDayRealtimeReputation;
+            existingCurrentDay.totalVisitors = currentDayRealtimeVisitors;
+        }
+        else
+        {
+            // 새 데이터 추가 (현재 일차는 값이 0이어도 표시)
+            combinedData.Add(new DailyData(currentDay, currentDayRealtimeReputation, currentDayRealtimeGold, 
+                                         currentDayRealtimeVisitors, 0, 0, 0, 0));
+        }
+        
+        // 일차순으로 정렬
+        combinedData.Sort((a, b) => a.day.CompareTo(b.day));
+        
+        return combinedData;
+    }
+    
+    /// <summary>
+    /// 실시간 차트 업데이트
+    /// </summary>
+    private void UpdateRealtimeChart()
+    {
+        if (!isPanelOpen) return;
+        
+        // 현재 일차의 실시간 데이터만 업데이트
+        var combinedData = GetCombinedData();
+        if (combinedData.Count == 0) return;
+        
+        // 최대값 재계산
+        CalculateMaxGold(combinedData);
+        
+        // 현재 일차의 포인트만 업데이트
+        UpdateCurrentDayPoint(combinedData);
+        
+        // Y축 라벨 업데이트
+        UpdateGoldLabels();
+        
+        // 그리드 업데이트
+        if (showGrid)
+        {
+            UpdateGrid();
+        }
+    }
+    
+    private void CalculateMaxGold(List<DailyData> data = null)
+    {
+        if (data == null)
+            data = goldData;
+            
         float actualMaxGold = 0f;
         
         // 실제 최대 골드 획득량 찾기
-        foreach (var data in goldData)
+        foreach (var item in data)
         {
-            if (data.goldEarned > actualMaxGold)
+            if (item.goldEarned > actualMaxGold)
             {
-                actualMaxGold = data.goldEarned;
+                actualMaxGold = item.goldEarned;
             }
         }
         
@@ -276,9 +387,12 @@ public class ManualGoldChart : MonoBehaviour
         DebugLog($"최대 골드 획득량 계산: 실제={actualMaxGold}, 스케일={maxGold}");
     }
     
-    private void UpdateContentSize()
+    private void UpdateContentSize(List<DailyData> data = null)
     {
-        totalDays = goldData.Count;
+        if (data == null)
+            data = goldData;
+            
+        totalDays = data.Count;
         // 고정 간격 기반으로 필요한 너비 계산
         float requiredWidth = chartMarginLeft + chartMarginRight;
         if (totalDays > 0)
@@ -347,29 +461,136 @@ public class ManualGoldChart : MonoBehaviour
         goldLabels.Clear();
     }
     
-    private void CreateChartPoints()
+    private void CreateChartPoints(List<DailyData> data = null)
     {
-        for (int i = 0; i < goldData.Count; i++)
+        if (data == null)
+            data = goldData;
+            
+        for (int i = 0; i < data.Count; i++)
         {
-            var data = goldData[i];
+            var item = data[i];
             
             // X 좌표 계산 (고정된 daySpacing 간격으로)
             float x = ChartStartX + i * daySpacing;
             
             // Y 좌표 계산 (0~maxGold를 차트 높이에 매핑)
-            float normalizedY = data.goldEarned / maxGold; // 0~1로 정규화
+            float normalizedY = item.goldEarned / maxGold; // 0~1로 정규화
             float y = ChartStartY + normalizedY * ActualChartHeight;
             
             Vector2 position = new Vector2(x, y);
             
             // 차트 포인트 생성
-            ChartPoint chartPoint = new ChartPoint(data.day, data.goldEarned, position);
-            chartPoint.pointObject = CreatePointObject(position, data);
+            ChartPoint chartPoint = new ChartPoint(item.day, item.goldEarned, position);
+            chartPoint.pointObject = CreatePointObject(position, item);
             
-            chartPoints[data.day] = chartPoint;
+            chartPoints[item.day] = chartPoint;
         }
         
         DebugLog($"골드 차트 포인트 생성 완료: {chartPoints.Count}개 (간격: {daySpacing}, 영역: {ActualChartWidth}x{ActualChartHeight})");
+    }
+    
+    /// <summary>
+    /// 현재 일차의 포인트만 업데이트
+    /// </summary>
+    private void UpdateCurrentDayPoint(List<DailyData> data)
+    {
+        var currentDayData = data.Find(d => d.day == currentDay);
+        if (currentDayData == null) return;
+        
+        // 현재 일차의 인덱스 찾기
+        int currentDayIndex = data.FindIndex(d => d.day == currentDay);
+        if (currentDayIndex == -1) return;
+        
+        // X 좌표 계산
+        float x = ChartStartX + currentDayIndex * daySpacing;
+        
+        // Y 좌표 계산
+        float normalizedY = currentDayData.goldEarned / maxGold;
+        float y = ChartStartY + normalizedY * ActualChartHeight;
+        
+        Vector2 position = new Vector2(x, y);
+        
+        // 기존 포인트가 있으면 업데이트, 없으면 새로 생성
+        if (chartPoints.ContainsKey(currentDay))
+        {
+            var existingPoint = chartPoints[currentDay];
+            existingPoint.gold = currentDayData.goldEarned;
+            existingPoint.position = position;
+            
+            if (existingPoint.pointObject != null)
+            {
+                var rectTransform = existingPoint.pointObject.GetComponent<RectTransform>();
+                if (rectTransform != null)
+                {
+                    rectTransform.anchoredPosition = position;
+                }
+            }
+        }
+        else
+        {
+            // 새 포인트 생성
+            ChartPoint chartPoint = new ChartPoint(currentDay, currentDayData.goldEarned, position);
+            chartPoint.pointObject = CreatePointObject(position, currentDayData);
+            chartPoints[currentDay] = chartPoint;
+        }
+        
+        // 골드량 라벨도 업데이트
+        UpdateCurrentDayValueLabel(currentDayData.goldEarned, position);
+        
+        DebugLog($"현재 일차 포인트 업데이트: Day {currentDay}, Gold+{currentDayData.goldEarned}");
+    }
+    
+    /// <summary>
+    /// 현재 일차의 값 라벨 업데이트
+    /// </summary>
+    private void UpdateCurrentDayValueLabel(int gold, Vector2 position)
+    {
+        // 현재 일차의 기존 라벨 찾기 (값이 아닌 일차로 찾기)
+        var existingLabel = goldValueLabels.Find(label => 
+            label != null && label.name == $"GoldValueLabel_Day{currentDay}");
+        
+        if (existingLabel != null)
+        {
+            // 기존 라벨의 텍스트와 위치 업데이트
+            var textComponent = existingLabel.GetComponent<TextMeshProUGUI>();
+            if (textComponent != null)
+            {
+                textComponent.text = gold.ToString();
+            }
+            
+            var rectTransform = existingLabel.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                rectTransform.anchoredPosition = new Vector2(position.x, position.y + 25);
+            }
+        }
+        else
+        {
+            // 새 라벨 생성 (일차로 이름 지정)
+            Vector2 labelPosition = new Vector2(position.x, position.y + 25);
+            GameObject valueLabel = CreateGoldValueLabel(gold, labelPosition);
+            valueLabel.name = $"GoldValueLabel_Day{currentDay}"; // 일차로 이름 변경
+            goldValueLabels.Add(valueLabel);
+        }
+    }
+    
+    /// <summary>
+    /// Y축 라벨 업데이트
+    /// </summary>
+    private void UpdateGoldLabels()
+    {
+        // 기존 라벨들 정리
+        foreach (var label in goldLabels)
+        {
+            if (label != null)
+            {
+                DestroyImmediate(label);
+            }
+        }
+        goldLabels.Clear();
+        
+        // 새 라벨들 생성
+        CreateGoldLabels();
     }
     
     private GameObject CreatePointObject(Vector2 position, DailyData data)
@@ -589,13 +810,11 @@ public class ManualGoldChart : MonoBehaviour
     {
         if (chartPanel != null)
         {
-            chartPanel.SetActive(true);
-            isPanelOpen = true;
+            // 다른 차트가 열려있다면 닫도록 알림
+            DailyStatisticsManager.NotifyChartOpened("GoldChart");
             
-            if (toggleButtonText != null)
-            {
-                toggleButtonText.text = "Close Gold Chart";
-            }
+            chartPanel.SetActive(true);
+            isPanelOpen = true;            
             
             RefreshChart();
         }
@@ -607,11 +826,6 @@ public class ManualGoldChart : MonoBehaviour
         {
             chartPanel.SetActive(false);
             isPanelOpen = false;
-            
-            if (toggleButtonText != null)
-            {
-                toggleButtonText.text = "Open Gold Chart";
-            }
         }
     }
     

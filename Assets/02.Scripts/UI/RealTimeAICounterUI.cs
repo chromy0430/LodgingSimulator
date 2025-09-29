@@ -17,7 +17,7 @@ namespace JY
         public TextMeshProUGUI aiCountText;
         
         [Tooltip("표시 형식 (예: \"실시간AI수.0m\")")]
-        [SerializeField] private string displayFormat = "{0}.0m";
+        [SerializeField] private string displayFormat = "{0}";
         
         [Header("디버그 설정")]
         [Tooltip("디버그 로그 표시 여부")]
@@ -25,7 +25,7 @@ namespace JY
         
         [Tooltip("중요한 이벤트만 로그 표시")]
         [SerializeField] private bool showImportantLogsOnly = true;
-        
+        private string lastFormattedText = "";
         // 내부 변수
         private int lastAICount = -1;
         private AISpawner aiSpawner;
@@ -42,37 +42,7 @@ namespace JY
         /// UI 초기화
         /// </summary>
         private void InitializeUI()
-        {
-            // TextMeshProUGUI 컴포넌트가 없으면 자동으로 찾기
-            if (aiCountText == null)
-            {
-                // 1. 같은 오브젝트에서 찾기
-                aiCountText = GetComponent<TextMeshProUGUI>();
-                
-                // 2. 자식 오브젝트에서 찾기
-                if (aiCountText == null)
-                {
-                    aiCountText = GetComponentInChildren<TextMeshProUGUI>();
-                }
-                
-                // 3. 부모 오브젝트에서 찾기
-                if (aiCountText == null)
-                {
-                    aiCountText = GetComponentInParent<TextMeshProUGUI>();
-                }
-                
-                // 4. 씬에서 "Str_Customer" 이름으로 찾기
-                if (aiCountText == null)
-                {
-                    GameObject strCustomer = GameObject.Find("Str_Customer");
-                    if (strCustomer != null)
-                    {
-                        aiCountText = strCustomer.GetComponent<TextMeshProUGUI>();
-                        DebugLog($"Str_Customer 오브젝트에서 TextMeshProUGUI 찾음: {aiCountText != null}", true);
-                    }
-                }
-            }
-            
+        {            
             if (aiCountText == null)
             {
                 Debug.LogError("[RealTimeAICounterUI] TextMeshProUGUI 컴포넌트를 찾을 수 없습니다! Str_Customer 오브젝트에 TextMeshProUGUI가 있는지 확인해주세요.");
@@ -210,7 +180,7 @@ namespace JY
             DebugLog($"현재 표시 텍스트: {aiCountText?.text}", true);
             DebugLog("======================", true);
         }
-        
+
         #region 정리
         void OnDestroy()
         {

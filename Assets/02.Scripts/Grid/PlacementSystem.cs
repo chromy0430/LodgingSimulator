@@ -1240,6 +1240,8 @@ public class PlacementSystem : MonoBehaviour
         inputManager.OnClicked += DeleteStructure; // 클릭 시 삭제 함수 호출
         inputManager.OnExit += StopDeleteMode;
         mouseIndicator.SetActive(true); // 인디케이터 활성화
+
+
         Debug.Log("삭제 모드 시작");
     }
 
