@@ -32,13 +32,6 @@ namespace Umbra {
             instance = this;
         }
 
-        private void Start () {
-            // Set default point lights trigger to main camera if null
-            if (pointLightsTrigger == null && Camera.main != null) {
-                pointLightsTrigger = Camera.main.transform;
-            }
-        }
-
         private void OnDisable () {
             UmbraRenderFeature.UnregisterUmbraLight(this);
             instance = null;

@@ -68,12 +68,9 @@ namespace Umbra {
                     if (UmbraSoftShadows.isDeferred && resourceData.gBuffer[2].IsValid()) {
                         passData.rtCameraNormalsTexture = resourceData.gBuffer[2];
                         builder.UseTexture(passData.rtCameraNormalsTexture, AccessFlags.Read);
-                        passData.rtCameraDepthTexture = resourceData.gBuffer[4];
-                        builder.UseTexture(passData.rtCameraDepthTexture, AccessFlags.Read);
                     }
-                    else {
-                        builder.UseTexture(resourceData.cameraDepthTexture, AccessFlags.Read);
-                    }
+                    passData.rtCameraDepthTexture = resourceData.cameraDepthTexture;
+                    builder.UseTexture(resourceData.cameraDepthTexture, AccessFlags.Read);
                     if ((input & ScriptableRenderPassInput.Normal) != 0) {
                         builder.UseTexture(resourceData.cameraNormalsTexture, AccessFlags.Read);
                     }
@@ -187,7 +184,7 @@ namespace Umbra {
                             cmd.SetGlobalFloatArray(ShaderParams.UmbraCascadeScales, cascadeScales);
                         }
 
-                        if (UmbraSoftShadows.isDeferred || profile.normalsSource == NormalSource.NormalsPass || profile.downsample) {
+                        if ((UmbraSoftShadows.isDeferred && profile.normalsSource == NormalSource.GBufferNormals) || profile.effectiveNormalsSource == NormalSource.NormalsPass || profile.downsample) {
                             mat.EnableKeyword(ShaderParams.SKW_NORMALS_TEXTURE);
                         }
                         else {

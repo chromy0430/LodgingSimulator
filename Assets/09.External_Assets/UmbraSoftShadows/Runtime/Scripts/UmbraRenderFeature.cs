@@ -170,21 +170,26 @@ namespace Umbra {
             float intensityMultiplier = profile.contactShadowsIntensityMultiplier;
             // Check if we should use point lights for contact shadows
             mat.DisableKeyword(ShaderParams.SKW_USE_POINT_LIGHT);
-            if (settings.contactShadowsSource == ContactShadowsSource.PointLights && settings.pointLightsTrigger != null) {
-                Vector3 triggerPosition = settings.pointLightsTrigger.position;
-
-                // Find the point light that contains the trigger position
+            if (settings.contactShadowsSource == ContactShadowsSource.PointLights) {
+                if (settings.pointLightsTrigger == null && Camera.main != null) {
+                    settings.pointLightsTrigger = Camera.main.transform;
+                }
                 float fade = 0;
-                foreach (var kvp in UmbraPointLightContactShadows.umbraPointLights) {
-                    UmbraPointLightContactShadows pointLightComponent = kvp.Value;
-                    if (pointLightComponent == null) continue;
-                    fade = pointLightComponent.ComputeVolumeFade(triggerPosition);
-                    if (fade > 0) {
-                        // Set point light data for the shader
-                        Vector3 pointLightPosition = pointLightComponent.transform.position;
-                        mat.SetVector(ShaderParams.PointLightPosition, new Vector4(pointLightPosition.x, pointLightPosition.y, pointLightPosition.z, 1.0f));
-                        mat.EnableKeyword(ShaderParams.SKW_USE_POINT_LIGHT);
-                        break; // Use the first point light found
+                if (settings.pointLightsTrigger != null) {
+                    Vector3 triggerPosition = settings.pointLightsTrigger.position;
+
+                    // Find the point light that contains the trigger position
+                    foreach (var kvp in UmbraPointLightContactShadows.umbraPointLights) {
+                        UmbraPointLightContactShadows pointLightComponent = kvp.Value;
+                        if (pointLightComponent == null) continue;
+                        fade = pointLightComponent.ComputeVolumeFade(triggerPosition);
+                        if (fade > 0) {
+                            // Set point light data for the shader
+                            Vector3 pointLightPosition = pointLightComponent.transform.position;
+                            mat.SetVector(ShaderParams.PointLightPosition, new Vector4(pointLightPosition.x, pointLightPosition.y, pointLightPosition.z, 1.0f));
+                            mat.EnableKeyword(ShaderParams.SKW_USE_POINT_LIGHT);
+                            break; // Use the first point light found
+                        }
                     }
                 }
                 if (fade <= 0) return false;
@@ -221,7 +226,7 @@ namespace Umbra {
         }
 
         static void SetupContactShadowsAfterOpaqueOnlyMaterial (UmbraProfile profile, Material mat) {
-            if (UmbraSoftShadows.isDeferred || profile.normalsSource == NormalSource.NormalsPass) {
+            if ((UmbraSoftShadows.isDeferred && profile.normalsSource == NormalSource.GBufferNormals) || profile.effectiveNormalsSource == NormalSource.NormalsPass) {
                 mat.EnableKeyword(ShaderParams.SKW_NORMALS_TEXTURE);
             }
             else {
@@ -411,7 +416,7 @@ namespace Umbra {
                     ConfigureInput(ScriptableRenderPassInput.None);
                 }
                 else {
-                    if (!UmbraSoftShadows.isDeferred && profile.shadowSource == ShadowSource.UmbraShadows && (profile.normalsSource == NormalSource.NormalsPass || profile.downsample)) {
+                    if (profile.shadowSource == ShadowSource.UmbraShadows && (profile.effectiveNormalsSource == NormalSource.NormalsPass || profile.downsample || profile.forceDepthPrepass)) {
                         ConfigureInput(ScriptableRenderPassInput.Depth | ScriptableRenderPassInput.Normal);
                     }
                     else {
@@ -569,7 +574,7 @@ namespace Umbra {
                                 cmd.SetGlobalFloatArray(ShaderParams.UmbraCascadeScales, cascadeScales);
                             }
 
-                            if (UmbraSoftShadows.isDeferred || profile.normalsSource == NormalSource.NormalsPass || profile.downsample) {
+                            if ((UmbraSoftShadows.isDeferred && profile.normalsSource == NormalSource.GBufferNormals) || profile.effectiveNormalsSource == NormalSource.NormalsPass || profile.downsample) {
                                 mat.EnableKeyword(ShaderParams.SKW_NORMALS_TEXTURE);
                             }
                             else {

@@ -133,7 +133,10 @@ public class InputManager : MonoBehaviour
         if (isDeleteMode)
             placementSystem.StopDeleteMode();
         else
-            placementSystem.StartDeleteMode();
+        {
+            placementSystem.StartDeleteMode();            
+        }
+        
     }
 
     private void ChangeBuildMode()

@@ -35,7 +35,9 @@ namespace Umbra {
 
     public enum NormalSource {
         ReconstructFromDepth,
-        NormalsPass
+        NormalsPass,
+        [InspectorName("GBuffer Normals")]
+        GBufferNormals
     }
 
     public enum LoopStep {
@@ -136,8 +138,16 @@ namespace Umbra {
         [Tooltip("Manual adjustment of shadow smoothness multiplier for this cascade")]
         public float cascade4Scale = 1f;
 
-        [Tooltip("Method used to obtain surface normals in forward rendering path (not used in deferred). Reconstruct from depth is faster but less accurate.")]
+        [Tooltip("Method used to obtain surface normals. Reconstruct from depth is fastest, normals pass is more accurate, and GBuffer normals (deferred only) uses existing GBuffer data.")]
         public NormalSource normalsSource = NormalSource.ReconstructFromDepth;
+
+        /// <summary>
+        /// Gets the effective normals source, falling back to ReconstructFromDepth when GBufferNormals is selected but not in deferred mode
+        /// </summary>
+        public NormalSource effectiveNormalsSource => 
+            normalsSource == NormalSource.GBufferNormals && !UmbraSoftShadows.isDeferred 
+                ? NormalSource.ReconstructFromDepth 
+                : normalsSource;
 
         [Tooltip("Reduces the number of samples while keeping the shadow size")]
         public LoopStep loopStepOptimization = LoopStep.Default;
@@ -153,6 +163,9 @@ namespace Umbra {
 
         [Tooltip("Resolves screen space shadows in a reduced buffer of half of screen size")]
         public bool downsample;
+
+        [Tooltip("Forces a depth prepass so depth and normals are available even for forward-only materials (useful in Deferred when using forward only materials).")]
+        public bool forceDepthPrepass;
 
         [Tooltip("Prevents shadow blurring on geometry edges")]
         public bool preserveEdges = true;

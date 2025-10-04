@@ -22090,6 +22090,7 @@ MonoBehaviour:
   skipFrameMaxCameraDisplacement: 0.1
   skipFrameMaxCameraRotation: 5
   downsample: 0
+  forceDepthPrepass: 0
   preserveEdges: 1
   style: 0
   maskTexture: {fileID: 0}

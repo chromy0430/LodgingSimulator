@@ -13,6 +13,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 282485
   packageName: Umbra Soft Shadows - Better Directional & Contact Shadows for URP
-  packageVersion: 6.1
-  assetPath: Assets/External_Assets/UmbraSoftShadows/Runtime/Scripts/UmbraPointLightContactShadows.cs
-  uploadId: 762411
+  packageVersion: 7.1
+  assetPath: Assets/09.External_Assets/UmbraSoftShadows/Runtime/Scripts/UmbraPointLightContactShadows.cs
+  uploadId: 781041

@@ -15,7 +15,7 @@ namespace Umbra {
         SerializedProperty blurDepthAttenStart, blurDepthAttenLength, blurGrazingAttenuation;
         SerializedProperty blendCascades, cascade1BlendingStrength, cascade2BlendingStrength, cascade3BlendingStrength;
         SerializedProperty cascade1Scale, cascade2Scale, cascade3Scale, cascade4Scale;
-        SerializedProperty loopStepOptimization, frameSkipOptimization, skipFrameMaxCameraDisplacement, skipFrameMaxCameraRotation, downsample;
+        SerializedProperty loopStepOptimization, frameSkipOptimization, skipFrameMaxCameraDisplacement, skipFrameMaxCameraRotation, downsample, forceDepthPrepass;
         SerializedProperty style, maskTexture, maskScale;
         SerializedProperty contactShadows, contactShadowsInjectionPoint, contactShadowsSampleCount, contactShadowsStepping;
         SerializedProperty contactShadowsThicknessNear, contactShadowsThicknessDistanceMultiplier, contactShadowsJitter, contactShadowsBias, contactShadowsBiasFar;
@@ -69,6 +69,7 @@ namespace Umbra {
             skipFrameMaxCameraDisplacement = serializedObject.FindProperty("skipFrameMaxCameraDisplacement");
             skipFrameMaxCameraRotation = serializedObject.FindProperty("skipFrameMaxCameraRotation");
             downsample = serializedObject.FindProperty("downsample");
+            forceDepthPrepass = serializedObject.FindProperty("forceDepthPrepass");
             style = serializedObject.FindProperty("style");
             maskTexture = serializedObject.FindProperty("maskTexture");
             maskScale = serializedObject.FindProperty("maskScale");
@@ -147,11 +148,13 @@ namespace Umbra {
                     EditorGUI.indentLevel--;
                 }
                 if (UmbraSoftShadows.isDeferred) {
-                    GUI.enabled = false;
-                    EditorGUILayout.LabelField("Normals Source", "Gbuffer Normals");
-                    GUI.enabled = true;
+                    EditorGUILayout.PropertyField(normalsSource);
                 }
                 else {
+                    // In forward mode, show normals source but handle GBufferNormals fallback
+                    if (normalsSource.intValue == (int)NormalSource.GBufferNormals) {
+                        EditorGUILayout.HelpBox("GBuffer Normals is only available in Deferred rendering. Falling back to Reconstruct From Depth.", MessageType.Info);
+                    }
                     EditorGUILayout.PropertyField(normalsSource);
                 }
             }
@@ -161,6 +164,10 @@ namespace Umbra {
                 EditorGUI.indentLevel++;
             }
             else {
+                // In OnlyContactShadows mode, show normals source but handle GBufferNormals fallback
+                if (!UmbraSoftShadows.isDeferred && normalsSource.intValue == (int)NormalSource.GBufferNormals) {
+                    EditorGUILayout.HelpBox("GBuffer Normals is only available in Deferred rendering. Falling back to Reconstruct From Depth.", MessageType.Info);
+                }
                 EditorGUILayout.PropertyField(normalsSource);
                 EditorGUILayout.Separator();
                 DrawSectionTitle("Contact Shadows Settings");
@@ -246,6 +253,7 @@ namespace Umbra {
                     EditorGUI.indentLevel--;
                 }
             }
+            EditorGUILayout.PropertyField(forceDepthPrepass);
             if (shadowSource.intValue != (int)ShadowSource.UnityShadows) {
                 EditorGUILayout.PropertyField(loopStepOptimization, new GUIContent("Loop Optimization"));
             }
