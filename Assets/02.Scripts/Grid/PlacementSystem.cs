@@ -40,7 +40,7 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] public List<GameObject> gridVisualization;
     public List<Bounds> planeBounds;
     
-    [FormerlySerializedAs("plane")] [Header("플레인 리스트")]
+    [Header("플레인 리스트")]
     public List<GameObject> plane1f;
     public List<GameObject> plane2f;
     public List<GameObject> plane3f;
