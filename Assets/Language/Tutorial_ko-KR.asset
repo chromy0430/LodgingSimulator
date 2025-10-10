@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Tutorial_ko-KR
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ko-KR
+  m_SharedData: {fileID: 11400000, guid: 738c1a70bf92b1d47bbaacbce6f5f27a, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 27415711744
+    m_Localized: "<color=#0000FF>\uD658\uC0C1\uC758 \uC12C</color>\uC5D0 \uC624\uC2E0
+      \uAC83\uC744 \uD658\uC601\uD569\uB2C8\uB2E4!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 669890809856
+    m_Localized: "<color=yellow>\uB9C8\uC6B0\uC2A4 \uC6B0\uD074\uB9AD</color>\uC744
+      \uB4DC\uB798\uADF8\uD558\uC5EC \\n\uC8FC\uBCC0\uC744 \uC790\uC720\uB86D\uAC8C
+      \uB458\uB7EC\uBCF4\uC138\uC694."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 771749482496
+    m_Localized: "<color=yellow>W, A, S, D</color> \uD0A4\uB97C \uD568\uAED8 \uB20C\uB7EC
+      \uC774\uB3D9\uD574\uBCF4\uC138\uC694."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 857497833472
+    m_Localized: "\uB9C8\uC6B0\uC2A4 \uD720\uC744 \uB3CC\uB824 \\n\uD654\uBA74\uC744
+      <color=yellow>\uD655\uB300/\uCD95\uC18C</color> \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 914049634304
+    m_Localized: "<color=yellow>B</color> \uD0A4\uB97C \uB20C\uB7EC \uAC74\uC124\uCC3D\uC744
+      \uC5F4\uC5B4\uBCF4\uC138\uC694."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 971801006080
+    m_Localized: "\uD654\uC0B4\uD45C\uAC00 \uAC00\uB9AC\uD0A4\uB294 \uAC74\uBB3C\uC744
+      <color=yellow>\uB9C8\uC6B0\uC2A4</color> \uB85C \uB20C\uB7EC\uBCF4\uC138\uC694."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1041652944896
+    m_Localized: "\uBC14\uB2E5\uC5D0 \uBCF4\uC774\uB294 <color=#FDCFFA>\uD558\uB298\uC0C9
+      \uADF8\uB9AC\uB4DC</color> \uC5D0 \uB20C\uB7EC\uBCF4\uC138\uC694."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

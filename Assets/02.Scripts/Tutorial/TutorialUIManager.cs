@@ -1,14 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class TutorialUIManager : MonoBehaviour
 {
-    public static TutorialUIManager Instance { get; private set; }
-
     [Header("UI 요소")]
     [SerializeField] private GameObject tutorialPanel; // 튜토리얼 전체 패널
     [SerializeField] private TextMeshProUGUI tutorialText; // 텍스트를 표시할 TextMeshPro UI
+    [SerializeField] private Image tutorialCharacter;
 
     [Header("애니메이션 설정")]
     [SerializeField] private float typingSpeed = 0.05f; // 한 글자가 나타나는 시간 (초)
@@ -19,15 +19,9 @@ public class TutorialUIManager : MonoBehaviour
 
     private void Awake()
     {
-        // --- 싱글톤 패턴 구현 ---
-        if (Instance == null)
+        if (tutorialPanel != null)
         {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // 씬이 바뀌어도 유지하려면 이 줄의 주석을 해제하세요.
-        }
-        else
-        {
-            Destroy(gameObject);
+            tutorialPanel.SetActive(false);
         }
     }
 
@@ -36,6 +30,7 @@ public class TutorialUIManager : MonoBehaviour
         // 시작할 때 튜토리얼 패널을 비활성화합니다.
         if (tutorialPanel != null)
         {
+            tutorialCharacter.gameObject.SetActive(false);
             tutorialPanel.SetActive(false);
         }
     }
@@ -53,6 +48,8 @@ public class TutorialUIManager : MonoBehaviour
         }
      
         tutorialPanel.SetActive(true);
+        tutorialCharacter.gameObject.SetActive(true);
+
         StartTypingAnimation(message);
     }
 
@@ -71,6 +68,7 @@ public class TutorialUIManager : MonoBehaviour
 
         IsTyping = false;
         tutorialPanel.SetActive(false);
+        tutorialCharacter.gameObject.SetActive(false);
     }
 
     /// <summary>
