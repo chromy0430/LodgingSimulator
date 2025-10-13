@@ -3192,7 +3192,7 @@ PrefabInstance:
     - target: {fileID: 846664218429197404, guid: 717035e74edc27048831523dbec2e78c, type: 3}
       propertyPath: mainTheme
       value: 
-      objectReference: {fileID: 8300000, guid: 4ff3ebc3e4f90774da7fb856c4d16e45, type: 3}
+      objectReference: {fileID: 8300000, guid: 8f7a7d75c72ced7499df4f81bd13d092, type: 3}
     - target: {fileID: 846664218429197404, guid: 717035e74edc27048831523dbec2e78c, type: 3}
       propertyPath: startTheme
       value: 
@@ -5058,22 +5058,6 @@ PrefabInstance:
     - target: {fileID: 8159014420304235335, guid: f24a712248b286949a393ff150d5b7da, type: 3}
       propertyPath: m_Name
       value: Setting_UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 8159014420304235335, guid: f24a712248b286949a393ff150d5b7da, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9156401834005066596, guid: f24a712248b286949a393ff150d5b7da, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9156401834005066596, guid: f24a712248b286949a393ff150d5b7da, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9156401834005066596, guid: f24a712248b286949a393ff150d5b7da, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

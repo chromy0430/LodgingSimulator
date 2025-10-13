@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 9
+  version: 10
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -21,15 +21,16 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: My Water
-  m_Shader: {fileID: -6465566751694194690, guid: 7377d4cb5af953647afe1a93b3c6dab2, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 5710fa9647ac06241b65256c4ee0a374, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _EMISSION
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2900
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
@@ -60,8 +61,10 @@ Material:
     - _QueueOffset: 0
     - _Refraction: 0
     - _Smoothness: 0.67
+    - _UnscaledTime: 0
     - _Water_Lerp: 0.533
     m_Colors:
+    - _Color: {r: 0.23921567, g: 0.44313726, b: 0.7490196, a: 0}
     - _UV1: {r: 4, g: 4, b: 0.13, a: 0}
     - _UV2: {r: 5, g: 5, b: 0, a: 0}
     - _Water_Speed1: {r: 0.1, g: 0.1, b: 0, a: 0}

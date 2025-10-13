@@ -92,10 +92,10 @@ public class ManualGoldChart : MonoBehaviour
             this.position = position;
         }
     }
-    
+
     #region Unity Lifecycle
     
-    private void Start()
+    private void Awake()
     {
         SetupEvents();
         InitializeChart();
@@ -108,8 +108,8 @@ public class ManualGoldChart : MonoBehaviour
         else
         {
             currentDay = 1; // TimeSystem이 없으면 1일차로 설정
-        }
-        
+        }               
+
         DebugLog($"차트 초기화: 현재 일차 = {currentDay}");
     }
     
@@ -796,14 +796,7 @@ public class ManualGoldChart : MonoBehaviour
     
     public void TogglePanel()
     {
-        if (isPanelOpen)
-        {
-            ClosePanel();
-        }
-        else
-        {
-            OpenPanel();
-        }
+        OpenPanel();
     }
     
     public void OpenPanel()

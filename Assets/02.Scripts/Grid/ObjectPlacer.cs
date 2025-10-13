@@ -35,6 +35,15 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private AutoNavMeshBaker navMeshBaker;
     [SerializeField] private SpawnEffect spawnEffect;
 
+
+    // 영상 찍은 후 지워야함
+    private readonly int wallLayer = LayerMask.NameToLayer("Wall");
+    private readonly int furnitureLayer = LayerMask.NameToLayer("Furniture");
+    private readonly int decoLayer = LayerMask.NameToLayer("Deco");
+    private readonly int floorLayer = LayerMask.NameToLayer("Floor");
+    private readonly int defaultLayer = LayerMask.NameToLayer("Default"); // 혹은 다른 기본 레이어
+    //
+
     /// <summary>
     /// 매개 변수의 오브젝트들을 배치한다.
     /// </summary> 
@@ -47,6 +56,37 @@ public class ObjectPlacer : MonoBehaviour
         //GameObject newObject = Instantiate(prefab); //, BatchedObj.transform, true);
         GameObject newObject = objectPool.Get(prefab, position, rotation);
 
+        // 2. 프리펩 이름을 '_' 기준으로 분리합니다.
+        string[] nameParts = prefab.name.Split('_');
+
+        // 3. 이름이 "pv_furniture_name" 형식인지 확인하고 레이어를 설정합니다.
+        // nameParts.Length > 1 : '_'가 포함되어 분리된 요소가 2개 이상인지 확인
+        if (nameParts.Length > 1)
+        {
+            // 두 번째 요소(furniture)를 레이어 이름으로 사용합니다.
+            string layerNamePart = nameParts[1];
+
+            // LayerMask는 대소문자를 구분하므로 첫 글자를 대문자로 변경해줍니다. (e.g., "furniture" -> "Furniture")
+            string layerName2 = char.ToUpper(layerNamePart[0]) + layerNamePart.Substring(1);
+
+            // 해당 이름의 레이어가 존재하는지 확인합니다.
+            int layerIndex = LayerMask.NameToLayer(layerName2);
+            if (layerIndex != -1) // -1은 해당 이름의 레이어가 없다는 의미입니다.
+            {
+                newObject.layer = layerIndex;
+            }
+            else
+            {
+                // 규칙에 맞는 이름을 가졌지만, 실제 프로젝트에 해당 레이어가 없는 경우 경고를 출력하고 기본 레이어로 설정합니다.
+                Debug.LogWarning($"레이어를 찾을 수 없습니다: '{layerName2}'. '{newObject.name}'에 기본 레이어를 설정합니다.");
+                newObject.layer = 0; // 0은 Default 레이어입니다.
+            }
+        }
+        else
+        {
+            // 이름이 규칙에 맞지 않는 경우, 기본 레이어로 설정합니다.
+            newObject.layer = 0; // 0은 Default 레이어입니다.
+        }
 
         // DOTween 애니메이션을 위해 오브젝트의 시작 위치를 목표 위치보다 높게 설정
         Vector3 startPosition = new Vector3(position.x, position.y + fallHeight, position.z);
@@ -59,7 +99,7 @@ public class ObjectPlacer : MonoBehaviour
         newObject.transform.DOMove(position, fallDuration)
                  .SetEase(fallEase).SetUpdate(true);
 
-        SFXManager.PlaySound(SoundType.Build, 0.1f);
+        if (SFXManager.Instance != null) SFXManager.PlaySound(SoundType.Build, 0.1f);
 
         spawnEffect.OnBuildingPlaced(position);
 

@@ -159,7 +159,7 @@ public class NewTutorialGuide : MonoBehaviour
     private void EndTutorial()
     {
         isTutorialFinish = true;
-        SaveManager.Instance.SaveGame(); // 튜토리얼 끝난 후 강제 저장
+        if (SaveManager.Instance != null) SaveManager.Instance.SaveGame(); // 튜토리얼 끝난 후 강제 저장
         isWaitingForAction = false;
         uiManager.HideTutorial();
         animationManager.HideAllGuides();

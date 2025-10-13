@@ -131,6 +131,7 @@ public class DailyStatisticsUI : MonoBehaviour
         isPanelOpen = false;
         if (statisticsPanel != null)
         {
+            statisticsPanel.SetActive(true);
             statisticsPanel.SetActive(false);
         }
     }

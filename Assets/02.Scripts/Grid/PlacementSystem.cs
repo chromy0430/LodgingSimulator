@@ -1,6 +1,5 @@
 using JY;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 using ZLinq;
@@ -11,8 +10,7 @@ public class PlacementSystem : MonoBehaviour
 
     [Header("컴포넌트")]
     [SerializeField] private InputManager inputManager;
-    [SerializeField] private ObjectPlacer objectPlacer;
-    [SerializeField] private GameObject previewObject;
+    [SerializeField] private ObjectPlacer objectPlacer;    
     [SerializeField] private ChangeFloorSystem changeFloorSystem;
     [SerializeField] private PurchaseButton purchaseButtonSystem;
     [SerializeField] private BuildModeToggle buildModeToggle;
@@ -30,6 +28,7 @@ public class PlacementSystem : MonoBehaviour
     public int indicatorMax = 100;
     [SerializeField] public GameObject mouseIndicator;
     [SerializeField] public GameObject cellIndicatorPrefab;
+    [SerializeField] private GameObject previewObject;
     private List<GameObject> cellIndicators = new List<GameObject>();
     private int selectedObjectIndex = -1;
     public int currentPurchaseLevel = 1;
@@ -447,12 +446,18 @@ public class PlacementSystem : MonoBehaviour
         }
 
         previewObject = Instantiate(database.objectsData[selectedObjectIndex].Prefab);
-        
+        previewObject.layer = LayerMask.NameToLayer("Preview");
+
+        foreach (Transform t in previewObject.GetComponentInChildren<Transform>(true))
+        {
+            t.gameObject.layer = LayerMask.NameToLayer("Preview");
+        }
+
         ApplyPreviewMaterial(previewObject);
     }
 
-   
-    private void ApplyPreviewMaterial(GameObject obj)
+
+    /*private void ApplyPreviewMaterial(GameObject obj)
     {
         objRenderers = obj.GetComponentsInChildren<Renderer>();
         
@@ -469,7 +474,27 @@ public class PlacementSystem : MonoBehaviour
             }
             objRenderer.materials = newMaterial;           
         }
+    }*/
+
+    private void ApplyPreviewMaterial(GameObject obj)
+    {
+        objRenderers = obj.GetComponentsInChildren<Renderer>();
+
+        foreach (Renderer objRenderer in objRenderers)
+        {
+            // 공유 재질 배열로 접근 (복제 방지)
+            Material[] sharedMats = objRenderer.sharedMaterials;
+            Material[] replaced = new Material[sharedMats.Length];
+
+            for (int i = 0; i < sharedMats.Length; i++)
+            {
+                replaced[i] = previewMaterialInstance; // 프리뷰용 공유 재질만 교체
+            }
+
+            objRenderer.sharedMaterials = replaced; // 공유 재질로 적용
+        }
     }
+
     #endregion
 
     #region 오브젝트 배치
@@ -1305,6 +1330,7 @@ public class PlacementSystem : MonoBehaviour
         inputManager.isDeleteMode = true;
         inputManager.OnClicked += DeleteStructure; // 클릭 시 삭제 함수 호출
         inputManager.OnExit += StopDeleteMode;
+        
         mouseIndicator.SetActive(true); // 인디케이터 활성화
 
 
@@ -1321,7 +1347,7 @@ public class PlacementSystem : MonoBehaviour
 
         inputManager.isDeleteMode = false;
         inputManager.OnClicked -= DeleteStructure;
-        inputManager.OnExit -= StopDeleteMode;        
+        inputManager.OnExit -= StopDeleteMode;
         mouseIndicator.SetActive(false); // 인디케이터 비활성화
         Debug.Log("삭제 모드 종료");
     }

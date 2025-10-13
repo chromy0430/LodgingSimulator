@@ -127,6 +127,10 @@ MonoBehaviour:
     m_Key: Btn_ClaimHeight
     m_Metadata:
       m_Items: []
+  - m_Id: 19652715300425728
+    m_Key: UI_CheckSave
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

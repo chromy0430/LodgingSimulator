@@ -111,6 +111,7 @@ public class InputManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && isDeleteMode)
         {
             OnClicked?.Invoke();
+            buildModeToggle.ResetToBuildMode();
         }
 
         // ESC 키로 건설 상태 종료

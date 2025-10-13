@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 690923067792498683}
   - component: {fileID: 537499656636937045}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: Pv_Wall_ConcreteWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
