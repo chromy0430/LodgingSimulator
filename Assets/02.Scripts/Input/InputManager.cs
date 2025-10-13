@@ -1,9 +1,10 @@
+using DG.Tweening;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using DG.Tweening;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
-using System.Collections;
 
 public class InputManager : MonoBehaviour
 {
@@ -42,10 +43,14 @@ public class InputManager : MonoBehaviour
     public GameObject SettingUI;
     public GameObject SettingUI2;
     public GameObject targetObject;
-    public GameObject QuestUI;
-    public Button     SettingBtn;
-
+    public GameObject QuestUI;    
     public GameObject HiringUI;
+    public Button SettingBtn;
+
+    [Header("언어별 설정 이미지")]
+    public GameObject settingImageKO; // 한국어 이미지
+    public GameObject settingImageEN; // 영어 이미지
+
 
     public RaycastHit   hit;
     public RaycastHit   hit2; 
@@ -62,8 +67,22 @@ public class InputManager : MonoBehaviour
     {
         InitialBuildUI();
         SettingBtn.onClick.AddListener(OnOffSettingUI);
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
     }
-    
+    private void OnDestroy()
+    {
+        LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    private void OnLocaleChanged(UnityEngine.Localization.Locale newLocale)
+    {
+        // 설정 UI가 활성화 상태일 때만 이미지를 업데이트합니다.
+        if (SettingUI.activeSelf)
+        {
+            UpdateSettingImages();
+        }
+    }
+
     private void Update()
     {
         // B키로 건설모드 시작
@@ -169,6 +188,8 @@ public class InputManager : MonoBehaviour
             SettingUI.SetActive(true);
             SettingUI.transform.localScale = Vector3.one * 0.1f;
             SettingUI.transform.DOScale(1f, animationDuration).SetEase(openEase).SetUpdate(true);
+
+            UpdateSettingImages();
         }
         // UI가 활성화 상태일 때 -> 닫기
         else
@@ -185,6 +206,23 @@ public class InputManager : MonoBehaviour
 
         //SettingUI.SetActive(!SettingUI.activeSelf);
         //if(SettingUI2.activeSelf) SettingUI2.SetActive(false);
+    }
+
+    private void UpdateSettingImages()
+    {
+        if (settingImageKO == null || settingImageEN == null) return;
+
+        // 현재 선택된 언어의 코드를 확인합니다.
+        if (LocalizationSettings.SelectedLocale.Identifier.Code == "ko-KR")
+        {
+            settingImageKO.SetActive(true);
+            settingImageEN.SetActive(false);
+        }
+        else // 한국어가 아니면 영어 이미지를 보여줍니다.
+        {
+            settingImageKO.SetActive(false);
+            settingImageEN.SetActive(true);
+        }
     }
 
     private void HandleObjectSelection()
