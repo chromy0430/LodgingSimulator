@@ -388,11 +388,12 @@ public class SaveManager : MonoBehaviour
     {
         if (ObjectPlacer.Instance != null)
         {
-            for (int i = 0; i < ObjectPlacer.Instance.placedGameObjects.Count; i++)
+            for (int i = ObjectPlacer.Instance.placedGameObjects.Count - 1; i >= 0; i--)
             {
                 if (ObjectPlacer.Instance.placedGameObjects[i] != null)
                 {
-                    ObjectPlacer.Instance.RemoveObject(i);
+                    // 애니메이션이 있는 RemoveObject 대신 즉시 삭제하는 RemoveObjectImmediate를 호출합니다.
+                    ObjectPlacer.Instance.RemoveObjectImmediate(i);
                 }
             }
             ObjectPlacer.Instance.placedGameObjects.Clear();

@@ -25968,7 +25968,6 @@ MonoBehaviour:
   - typeName: "\uCE74\uC6B4\uD130 \uC9C1\uC6D0"
     description: "\uCE74\uC6B4\uD130 \uC11C\uB294 AI"
     workPositionTag: WorkPosition_Reception
-    waitingPositionTag: WaitingPosition_Reception
     hiringCost: 500
     dailyWage: 30
     employeePrefab: {fileID: 547590319920015025, guid: c361d19cd1e86d64c961883c6afd17f3, type: 3}
@@ -25980,7 +25979,6 @@ MonoBehaviour:
   - typeName: "\uC8FC\uBC29 \uC9C1\uC6D0"
     description: "\uC8FC\uBC29 AI"
     workPositionTag: WorkPosition_Kitchen
-    waitingPositionTag: WaitingPosition_Kitchen
     hiringCost: 100
     dailyWage: 50
     employeePrefab: {fileID: 547590319920015025, guid: 20e5ce6851e9649449797dddffc59ada, type: 3}
@@ -29949,6 +29947,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1742988590}
     - target: {fileID: 8953506020061692816, guid: 5817cfdfc246e6b4ebe7adc9dc3f38f9, type: 3}
+      propertyPath: buildModeToggle
+      value: 
+      objectReference: {fileID: 1546889545}
+    - target: {fileID: 8953506020061692816, guid: 5817cfdfc246e6b4ebe7adc9dc3f38f9, type: 3}
       propertyPath: purchase2FButton
       value: 
       objectReference: {fileID: 1610486310}
@@ -32842,6 +32844,10 @@ PrefabInstance:
     - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
       propertyPath: objectPool
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
+      propertyPath: destroyEase
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
       propertyPath: spawnEffect

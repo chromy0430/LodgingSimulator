@@ -3189,9 +3189,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 846664218429197404, guid: 717035e74edc27048831523dbec2e78c, type: 3}
+      propertyPath: mainTheme
+      value: 
+      objectReference: {fileID: 8300000, guid: 4ff3ebc3e4f90774da7fb856c4d16e45, type: 3}
+    - target: {fileID: 846664218429197404, guid: 717035e74edc27048831523dbec2e78c, type: 3}
+      propertyPath: startTheme
+      value: 
+      objectReference: {fileID: 8300000, guid: bf780b44fd63af342ba116a2d489cba5, type: 3}
     - target: {fileID: 1621001301907514656, guid: 717035e74edc27048831523dbec2e78c, type: 3}
       propertyPath: m_Name
       value: SoundSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 2230619088341420197, guid: 717035e74edc27048831523dbec2e78c, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8834702609037051204, guid: 717035e74edc27048831523dbec2e78c, type: 3}
+      propertyPath: Loop
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4343,6 +4359,7 @@ MonoBehaviour:
   skipFrameMaxCameraDisplacement: 0.1
   skipFrameMaxCameraRotation: 5
   downsample: 0
+  forceDepthPrepass: 0
   preserveEdges: 1
   style: 0
   maskTexture: {fileID: 0}

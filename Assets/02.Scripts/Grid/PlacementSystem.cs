@@ -15,6 +15,7 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private GameObject previewObject;
     [SerializeField] private ChangeFloorSystem changeFloorSystem;
     [SerializeField] private PurchaseButton purchaseButtonSystem;
+    [SerializeField] private BuildModeToggle buildModeToggle;
     private GridData selectedData; 
     
     private Renderer previewRenderer;
@@ -419,6 +420,7 @@ public class PlacementSystem : MonoBehaviour
     {
         StopPlacement();
         StopDeleteMode();
+        buildModeToggle.ResetToBuildMode();
 
         selectedObjectIndex = database.objectsData.FindIndex(data => data.ID == ID);
         if (selectedObjectIndex < 0)

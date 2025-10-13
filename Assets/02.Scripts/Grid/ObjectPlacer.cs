@@ -8,7 +8,7 @@ public class ObjectPlacer : MonoBehaviour
     public float fallHeight = 5f; // 오브젝트가 떨어질 시작 높이
     public float fallDuration = 0.5f; // 떨어지는 애니메이션 시간
     public Ease fallEase = Ease.OutBounce; // 애니메이션 이징(부드러움) 효과
-    public Ease destroyEase = Ease.InElastic;
+    public Ease destroyEase = Ease.OutBounce;
     public static ObjectPlacer Instance { get; set; }
 
     private ObjectPoolManager objectPool;
@@ -160,6 +160,30 @@ public class ObjectPlacer : MonoBehaviour
     public int GetObjectIndex(GameObject obj)
     {
         return placedGameObjects.IndexOf(obj);
+    }
+
+    /// <summary>
+    /// 애니메이션 없이 오브젝트를 즉시 풀로 반환합니다. (세이브/로드용)
+    /// </summary>
+    /// <param name="index"></param>
+    public void RemoveObjectImmediate(int index)
+    {
+        if (index >= 0 && index < placedGameObjects.Count)
+        {
+            GameObject obj = placedGameObjects[index];
+            if (obj != null)
+            {
+                // 주방 감지기에 제거 알림 (필요 시)
+                if (KitchenDetector.Instance != null)
+                {
+                    KitchenDetector.Instance.OnFurnitureRemoved(obj, obj.transform.position);
+                }
+
+                // DOTween 애니메이션 없이 바로 풀에 반환
+                objectPool.Return(obj);
+            }
+            placedGameObjects[index] = null; // 리스트에서 참조만 제거
+        }
     }
 
 }
