@@ -126,6 +126,15 @@ MonoBehaviour:
     m_Localized: "\uD1B5 \uACC4"
     m_Metadata:
       m_Items: []
+  - m_Id: 19583136507269120
+    m_Localized: "\uB545\\n\uAD6C\uB9E4"
+    m_Metadata:
+      m_Items:
+      - rid: 4779790810586284160
+  - m_Id: 19583186058776576
+    m_Localized: "\uC99D\uCD95"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -136,3 +145,4 @@ MonoBehaviour:
         m_SharedEntries:
         - id: 10797671157760
         - id: 13422110699065344
+        - id: 19583136507269120

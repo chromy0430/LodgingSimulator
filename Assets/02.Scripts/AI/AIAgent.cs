@@ -880,12 +880,9 @@ public class AIAgent : MonoBehaviour
     }
     
     private IEnumerator QueueBehavior()
-    {
-        Debug.Log($"[QueueBehavior] AI {gameObject.name}: QueueBehavior 시작 (현재 상태: {currentState}, 방 인덱스: {currentRoomIndex})");
-        
+    {        
         if (counterManager == null || counterPosition == null)
         {
-            Debug.LogError($"[QueueBehavior] AI {gameObject.name}: counterManager 또는 counterPosition이 null");
             queueRetryCount = 0; // 재시도 횟수 초기화
             float randomValue = Random.value;
             if (randomValue < 0.5f)

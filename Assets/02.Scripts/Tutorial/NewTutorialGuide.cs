@@ -73,7 +73,8 @@ public class NewTutorialGuide : MonoBehaviour
         }
 
         currentStep = tutorialSteps[currentStepIndex];
-        uiManager.ShowTutorialMessage(currentStep.dialogue.GetLocalizedString());
+        uiManager.ShowTutorialMessage(currentStep.dialogue);
+        //uiManager.ShowTutorialMessage(currentStep.dialogue.GetLocalizedString());
 
         if (!string.IsNullOrEmpty(currentStep.guideAnimationName))
         {

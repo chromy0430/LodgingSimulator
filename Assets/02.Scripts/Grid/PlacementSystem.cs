@@ -1,7 +1,7 @@
 using JY;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using ZLinq;
 
@@ -14,6 +14,7 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private ObjectPlacer objectPlacer;
     [SerializeField] private GameObject previewObject;
     [SerializeField] private ChangeFloorSystem changeFloorSystem;
+    [SerializeField] private PurchaseButton purchaseButtonSystem;
     private GridData selectedData; 
     
     private Renderer previewRenderer;
@@ -32,7 +33,8 @@ public class PlacementSystem : MonoBehaviour
     private int selectedObjectIndex = -1;
     public int currentPurchaseLevel = 1;
     public bool FloorLock = false;
-    
+       
+
     // 가구 레이어 마스크 설정
     private int furnitureLayerMask;
     
@@ -905,8 +907,29 @@ public class PlacementSystem : MonoBehaviour
     /// </summary>
     public void PurchaseNextLand()
     {
+        switch (currentPurchaseLevel)
+        {
+            case 1:
+                if (PlayerWallet.Instance.money < 1000) return;
+                PlayerWallet.Instance.SpendMoney(1000);
+                break;
+            case 2:
+                if (PlayerWallet.Instance.money < 3000) return;
+                PlayerWallet.Instance.SpendMoney(3000);
+                break;
+            case 3:
+                if (PlayerWallet.Instance.money < 5000) return;
+                    PlayerWallet.Instance.SpendMoney(5000);
+                break;
+
+            default:
+                if (PlayerWallet.Instance.money <= 0) return;
+                break;
+        }
+
+        
         currentPurchaseLevel++;
-        Debug.Log(currentPurchaseLevel);
+        purchaseButtonSystem.ChangeMoneyWhenPurchaseLand(currentPurchaseLevel);
 
         ActivatePlanesByLevel(currentPurchaseLevel);
         UpdateGridBounds();
@@ -930,6 +953,8 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] List<GameObject> purchase1fPlane_Lv2;
     [SerializeField] List<GameObject> purchase1fPlane_Lv3;
     [SerializeField] List<GameObject> purchase1fPlane_Lv4;
+
+    
 
     /// <summary>
     /// 플레인의 이름에서 뽑아낸 정수와 반환된 정수의 값이 같을 때, 그리드 플레인을 활성화한다. 
@@ -993,7 +1018,7 @@ public class PlacementSystem : MonoBehaviour
     }*/
     #endregion
 
-    #region 2층 구매
+    #region 증축
 
     // 땅이 전부 구매된 후에 2층 해금이 풀림
     // 해금 해제 후에는 2층의 땅을 모두 구입할 필요가 없기 때문에 전부다 비활성화 후 한꺼번에 활성화가 가능
@@ -1017,6 +1042,9 @@ public class PlacementSystem : MonoBehaviour
             Debug.LogWarning("모든 땅을 구매한 후에만 2층을 구매할 수 있습니다.");
             return;
         }
+
+        if (PlayerWallet.Instance.money < 10000) return;
+        PlayerWallet.Instance.SpendMoney(10000);
 
         FloorLock = true;
 
