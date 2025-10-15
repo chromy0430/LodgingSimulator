@@ -446,12 +446,12 @@ public class PlacementSystem : MonoBehaviour
         }
 
         previewObject = Instantiate(database.objectsData[selectedObjectIndex].Prefab);
-        previewObject.layer = LayerMask.NameToLayer("Preview");
+       /* previewObject.layer = LayerMask.NameToLayer("Preview");
 
         foreach (Transform t in previewObject.GetComponentInChildren<Transform>(true))
         {
             t.gameObject.layer = LayerMask.NameToLayer("Preview");
-        }
+        }*/
 
         ApplyPreviewMaterial(previewObject);
     }
@@ -504,8 +504,9 @@ public class PlacementSystem : MonoBehaviour
         if (isDragging) return;
         if (inputManager.IsPointerOverUI())  return;
 
-        
-        
+        buildModeToggle.ResetToBuildMode();
+
+
         //Vector3 mousePosition = inputManager.GetSelectedMapPosition();
         Vector3Int gridPosition = grid.WorldToCell(inputManager.GetSelectedMapPosition());
 

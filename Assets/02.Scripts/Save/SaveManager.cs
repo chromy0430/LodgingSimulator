@@ -452,15 +452,29 @@ public class SaveManager : MonoBehaviour
             case 2:
                 return 4.8175f;
             case 3:
-                return 9.63405f;
+                return 9.635401f;
             case 4:
-                return 14.45f;
+                return 14.45425f;
             case 5:
-                return 19.2675f; // 14.45 + 4.8175
+                return 19.28355f; // 14.45 + 4.8175
             case 6:
-                return 24.085f;
+                return 24.115f; // 24.109 변경 예정 / 현재 24.07925 24.255 - 24.109
             default:
                 return 0;
+                /*case 1:
+                    return 0;
+                case 2:
+                    return 4.8175f;
+                case 3:
+                    return 9.63405f;
+                case 4:
+                    return 14.45f;
+                case 5:
+                    return 19.2675f; // 14.45 + 4.8175
+                case 6:
+                    return 24.085f;
+                default:
+                    return 0;*/
         }
     }
 }

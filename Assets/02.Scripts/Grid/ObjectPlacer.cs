@@ -35,15 +35,6 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private AutoNavMeshBaker navMeshBaker;
     [SerializeField] private SpawnEffect spawnEffect;
 
-
-    // 영상 찍은 후 지워야함
-    private readonly int wallLayer = LayerMask.NameToLayer("Wall");
-    private readonly int furnitureLayer = LayerMask.NameToLayer("Furniture");
-    private readonly int decoLayer = LayerMask.NameToLayer("Deco");
-    private readonly int floorLayer = LayerMask.NameToLayer("Floor");
-    private readonly int defaultLayer = LayerMask.NameToLayer("Default"); // 혹은 다른 기본 레이어
-    //
-
     /// <summary>
     /// 매개 변수의 오브젝트들을 배치한다.
     /// </summary> 
@@ -56,6 +47,7 @@ public class ObjectPlacer : MonoBehaviour
         //GameObject newObject = Instantiate(prefab); //, BatchedObj.transform, true);
         GameObject newObject = objectPool.Get(prefab, position, rotation);
 
+        /*
         // 2. 프리펩 이름을 '_' 기준으로 분리합니다.
         string[] nameParts = prefab.name.Split('_');
 
@@ -87,6 +79,7 @@ public class ObjectPlacer : MonoBehaviour
             // 이름이 규칙에 맞지 않는 경우, 기본 레이어로 설정합니다.
             newObject.layer = 0; // 0은 Default 레이어입니다.
         }
+        */
 
         // DOTween 애니메이션을 위해 오브젝트의 시작 위치를 목표 위치보다 높게 설정
         Vector3 startPosition = new Vector3(position.x, position.y + fallHeight, position.z);
