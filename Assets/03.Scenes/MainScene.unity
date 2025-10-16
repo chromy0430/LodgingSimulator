@@ -24517,7 +24517,7 @@ MonoBehaviour:
   objectPlacer: {fileID: 36320661}
   cameraCon: {fileID: 1156550927}
   currentStepIndex: -1
-  isTutorialFinish: 1
+  isTutorialFinish: 0
 --- !u!114 &1880077935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29239,7 +29239,7 @@ PrefabInstance:
       objectReference: {fileID: 1026163267}
     - target: {fileID: 6583045011636605706, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -274.9999
+      value: -274.99927
       objectReference: {fileID: 0}
     - target: {fileID: 7125235026482093240, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -33032,7 +33032,7 @@ PrefabInstance:
       objectReference: {fileID: 1541092961}
     - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
       propertyPath: videoTaking
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
       propertyPath: fallDuration
