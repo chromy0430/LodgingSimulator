@@ -18,7 +18,7 @@ public class NewTutorialGuide : MonoBehaviour
     private bool isWaitingForAction = false;
     private int initialObjectCount = 0; // 건설 감지를 위한 초기 오브젝트 수
 
-    public bool isTutorialFinish { get; set; } = false;
+    public bool isTutorialFinish = false;
     public static NewTutorialGuide Instance { get; private set; }
 
     // wait 함수 캐싱 

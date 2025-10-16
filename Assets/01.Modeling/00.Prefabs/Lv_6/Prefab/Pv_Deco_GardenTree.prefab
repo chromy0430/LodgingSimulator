@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8475964596778952642}
   - component: {fileID: 2832150939114906269}
   m_Layer: 13
-  m_Name: garen tree
+  m_Name: Pv_Deco_GardenTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

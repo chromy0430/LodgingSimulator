@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4106007107325122714}
   - component: {fileID: 6750796114701603258}
   m_Layer: 13
-  m_Name: garden grass3
+  m_Name: Pv_Deco_GardenGrass_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

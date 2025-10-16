@@ -7678,7 +7678,7 @@ MonoBehaviour:
     m_Bits: 512
   objectLayer:
     serializedVersion: 2
-    m_Bits: 261120
+    m_Bits: 6552576
   BuildUI: {fileID: 52600009}
   SettingUI: {fileID: 1345256448}
   SettingUI2: {fileID: 1100742736}
@@ -24517,6 +24517,7 @@ MonoBehaviour:
   objectPlacer: {fileID: 36320661}
   cameraCon: {fileID: 1156550927}
   currentStepIndex: -1
+  isTutorialFinish: 1
 --- !u!114 &1880077935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29238,7 +29239,7 @@ PrefabInstance:
       objectReference: {fileID: 1026163267}
     - target: {fileID: 6583045011636605706, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -274.99463
+      value: -274.99994
       objectReference: {fileID: 0}
     - target: {fileID: 7125235026482093240, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -30133,6 +30134,10 @@ PrefabInstance:
       propertyPath: tooltipPanel
       value: 
       objectReference: {fileID: 1267908466}
+    - target: {fileID: 8953506020061692816, guid: 5817cfdfc246e6b4ebe7adc9dc3f38f9, type: 3}
+      propertyPath: isVideoTaking
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8953506020061692816, guid: 5817cfdfc246e6b4ebe7adc9dc3f38f9, type: 3}
       propertyPath: mouseIndicator
       value: 
@@ -33006,6 +33011,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 1926447069}
     m_Modifications:
     - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
+      propertyPath: fallEase
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
+      propertyPath: fallHeight
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
       propertyPath: objectPool
       value: 
       objectReference: {fileID: 0}
@@ -33017,6 +33030,14 @@ PrefabInstance:
       propertyPath: spawnEffect
       value: 
       objectReference: {fileID: 1541092961}
+    - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
+      propertyPath: videoTaking
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
+      propertyPath: fallDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 955649748813820096, guid: 35906e948e62cc04bbe1d29e1f62ad86, type: 3}
       propertyPath: inputManager
       value: 
