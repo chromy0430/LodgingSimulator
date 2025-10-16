@@ -458,7 +458,15 @@ public class PlacementSystem : MonoBehaviour
              foreach (Transform t in previewObject.GetComponentInChildren<Transform>(true))
              {
                  t.gameObject.layer = LayerMask.NameToLayer("Preview");
-             }
+                foreach (Transform t2 in t.GetComponentInChildren<Transform>(true))
+                {
+                    t2.gameObject.layer = LayerMask.NameToLayer("Preview");
+                    foreach (Transform t3 in t2.GetComponentInChildren<Transform>(true))
+                    {
+                        t3.gameObject.layer = LayerMask.NameToLayer("Preview");
+                    }
+                }
+            }
         }
         ApplyPreviewMaterial(previewObject);
     }
@@ -1397,7 +1405,7 @@ public class PlacementSystem : MonoBehaviour
         StopPlacement(); // 기존 배치 모드 종료
         inputManager.isDeleteMode = true;
         inputManager.OnClicked += DeleteStructure; // 클릭 시 삭제 함수 호출
-        inputManager.OnExit += StopDeleteMode;
+        //inputManager.OnExit += StopDeleteMode;
         
         mouseIndicator.SetActive(true); // 인디케이터 활성화
 
@@ -1415,7 +1423,7 @@ public class PlacementSystem : MonoBehaviour
 
         inputManager.isDeleteMode = false;
         inputManager.OnClicked -= DeleteStructure;
-        inputManager.OnExit -= StopDeleteMode;
+        //inputManager.OnExit -= StopDeleteMode;
         mouseIndicator.SetActive(false); // 인디케이터 비활성화
         Debug.Log("삭제 모드 종료");
     }
