@@ -21,7 +21,9 @@ public class TutorialUIManager : MonoBehaviour
 
     private void OnEnable()
     {
+#pragma warning disable UDR0005 // Domain Reload Analyzer
         LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+#pragma warning restore UDR0005 // Domain Reload Analyzer
         if (tutorialPanel != null)
         {
             tutorialPanel.SetActive(false);

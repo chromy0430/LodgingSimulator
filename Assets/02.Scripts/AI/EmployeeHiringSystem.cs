@@ -402,6 +402,7 @@ namespace JY
             }
             catch (Exception e)
             {
+                Debug.Log($"{e} - Exception Occured");
                 return null;
             }
         }

@@ -45,6 +45,7 @@ public class InputManager : MonoBehaviour
     public GameObject targetObject;
     public GameObject QuestUI;    
     public GameObject HiringUI;
+    public GameObject StatisticUI;
     public Button SettingBtn;
 
     [Header("언어별 설정 이미지")]
@@ -175,6 +176,8 @@ public class InputManager : MonoBehaviour
 
     private void OnOffSettingUI()
     {
+        if (StatisticUI.activeSelf) StatisticUI.SetActive(false);
+
         // UI가 비활성화 상태일 때 -> 열기
         if (!SettingUI.activeSelf)
         {
@@ -203,9 +206,6 @@ public class InputManager : MonoBehaviour
                     SettingUI2.SetActive(false);
                 });
         }
-
-        //SettingUI.SetActive(!SettingUI.activeSelf);
-        //if(SettingUI2.activeSelf) SettingUI2.SetActive(false);
     }
 
     private void UpdateSettingImages()

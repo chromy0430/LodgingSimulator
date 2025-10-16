@@ -24,6 +24,7 @@ namespace Umbra {
         SerializedProperty transparentReceiverPlane, receiverPlaneAltitude;
         SerializedProperty earlyOutSamples;
 
+#pragma warning disable UDR0001 // Domain Reload Analyzer
         static GUIStyle titleLabelStyle;
         static Color titleColor;
 

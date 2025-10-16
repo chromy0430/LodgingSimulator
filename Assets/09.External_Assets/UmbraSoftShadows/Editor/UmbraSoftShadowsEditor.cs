@@ -13,6 +13,7 @@ namespace Umbra {
         SerializedProperty contactShadowsSource;
         SerializedProperty pointLightsTrigger;
 
+#pragma warning disable UDR0001 // Domain Reload Analyzer
         static UmbraPreset preset = UmbraPreset.None;
         static GUIStyle boxStyle;
         UmbraProfile cachedProfile;
