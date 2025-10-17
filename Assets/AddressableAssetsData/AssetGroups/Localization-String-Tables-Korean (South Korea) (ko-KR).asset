@@ -29,6 +29,13 @@ MonoBehaviour:
     - Locale-ko-KR
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b9b55624f131d64091bc27502a0b2ed
+    m_Address: Tier_ko-KR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko-KR
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ce143552772bebf4b92b8808a68d4309
     m_Address: Locales_ko-KR
     m_ReadOnly: 1
