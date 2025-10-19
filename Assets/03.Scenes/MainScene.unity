@@ -5668,7 +5668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd6042fa0746a9345a88977cae8795f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_renderer: {fileID: 0}
+  m_renderer: {fileID: 510768910}
 --- !u!1 &378217410
 GameObject:
   m_ObjectHideFlags: 0
@@ -7723,6 +7723,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 948510711}
     m_Modifications:
+    - target: {fileID: 3654028596302020188, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
+      propertyPath: m_renderer
+      value: 
+      objectReference: {fileID: 510768909}
     - target: {fileID: 3880775010879075148, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
       propertyPath: m_Name
       value: Island
@@ -7771,6 +7775,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9100449453776401432, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
+      propertyPath: m_renderer
+      value: 
+      objectReference: {fileID: 510768911}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7779,6 +7787,21 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 362062450}
   m_SourcePrefab: {fileID: 100100000, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
+--- !u!23 &510768909 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6701545009978525549, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
+  m_PrefabInstance: {fileID: 510768908}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &510768910 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8471097988954297091, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
+  m_PrefabInstance: {fileID: 510768908}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &510768911 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3129863339723304363, guid: 95ad9a64d382b184fb300b059eb64b85, type: 3}
+  m_PrefabInstance: {fileID: 510768908}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &511896336
 GameObject:
   m_ObjectHideFlags: 0
@@ -30088,7 +30111,7 @@ PrefabInstance:
       objectReference: {fileID: 1026163267}
     - target: {fileID: 6583045011636605706, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -274.99896
+      value: -274.99954
       objectReference: {fileID: 0}
     - target: {fileID: 7125235026482093240, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
