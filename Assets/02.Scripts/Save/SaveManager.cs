@@ -662,7 +662,10 @@ public class SaveManager : MonoBehaviour
             ObjectData objectData = PlacementSystem.Instance.GetDatabase().GetObjectData(placementData.ID);
             if (objectData != null)
             {
-                Vector3 worldPosition = PlacementSystem.Instance.grid.GetCellCenterWorld(entry.key);
+                //Vector3 worldPosition = PlacementSystem.Instance.grid.GetCellCenterWorld(entry.key);
+
+                Vector3Int origin = placementData.OriginPosition;
+                Vector3 worldPosition = PlacementSystem.Instance.grid.GetCellCenterWorld(origin);
 
                 int floor = ConvertGridYToFloorNumber(entry.key.y);
                 float floorHeight = GetFloorHeight(floor);
@@ -677,10 +680,12 @@ public class SaveManager : MonoBehaviour
                     processedObjectIndices.Add(placementData.PlacedObjectIndex);
 
                     // Re-calculate all grid positions this object occupies.
-                    List<Vector3Int> occupiedPositions = PlacementSystem.Instance.floorData.CalculatePosition(entry.key, objectData.Size, placementData.Rotation, PlacementSystem.Instance.grid);
+                    //List<Vector3Int> occupiedPositions = PlacementSystem.Instance.floorData.CalculatePosition(entry.key, objectData.Size, placementData.Rotation, PlacementSystem.Instance.grid);
+                    List<Vector3Int> occupiedPositions = PlacementSystem.Instance.floorData.CalculatePosition(origin, objectData.Size, placementData.Rotation, PlacementSystem.Instance.grid);
 
                     // Create new PlacementData with the NEW index from ObjectPlacer.
-                    PlacementData dataToAdd = new PlacementData(occupiedPositions, placementData.ID, newIndex, placementData.KindIndex, placementData.Rotation);
+                    //PlacementData dataToAdd = new PlacementData(occupiedPositions, placementData.ID, newIndex, placementData.KindIndex, placementData.Rotation);
+                    PlacementData dataToAdd = new PlacementData(origin, occupiedPositions, placementData.ID, newIndex, placementData.KindIndex, placementData.Rotation);
 
                     // Add the new PlacementData to the dictionary for all occupied positions.
                     foreach (var pos in occupiedPositions)

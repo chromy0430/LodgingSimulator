@@ -25,12 +25,12 @@ public class GridData
     /// <param name="placedObjectIndex"></param>
     /// <param name="rotation"></param>
     /// <param name="grid"></param>
-    /// <exception cref="Exception"></exception>
+    /// <exception cref="Exception"></exception> 
      public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int ID, int placedObjectIndex, int kindOfIndex, Quaternion rotation, Grid grid, bool isWall)
     {
         List<Vector3Int> positions = CalculatePosition(gridPosition, objectSize, rotation, grid);
         // PlacementData 생성 시 rotation 전달
-        PlacementData data = new PlacementData(positions, ID, placedObjectIndex, kindOfIndex, rotation);
+        PlacementData data = new PlacementData(gridPosition, positions, ID, placedObjectIndex, kindOfIndex, rotation);
 
         foreach (var pos in positions)
         {

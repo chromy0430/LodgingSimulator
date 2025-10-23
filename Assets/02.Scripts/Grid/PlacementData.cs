@@ -41,6 +41,8 @@ public class PlacementData
     [SerializeField] private int kindIndex;
     [SerializeField] private Quaternion rotation;
 
+    [SerializeField] private Vector3Int originPosition;
+
     public int ID => id;
     public int PlacedObjectIndex
     {
@@ -49,9 +51,12 @@ public class PlacementData
     }
     public int KindIndex => kindIndex;
     public Quaternion Rotation => rotation;
+    public Vector3Int OriginPosition => originPosition;
 
-    public PlacementData(List<Vector3Int> occupiedPositions, int id, int placedObjectIndex, int kindOfIndex, Quaternion rotation)
+    public PlacementData(Vector3Int originPosition, List<Vector3Int> occupiedPositions, int id, int placedObjectIndex, int kindOfIndex, Quaternion rotation)
     {
+        this.originPosition = originPosition;
+
         this.occupiedPositions = occupiedPositions;
         foreach(Vector3Int pos in occupiedPositions)
         {

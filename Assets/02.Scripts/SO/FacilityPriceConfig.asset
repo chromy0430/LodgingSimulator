@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12128a7613e7d9c47a306f91414579d2, type: 3}
   m_Name: FacilityPriceConfig
   m_EditorClassIdentifier: 
-  sunbedBasePrice: 50
+  sunbedBasePrice: 150
   sunbedReputation: 10
   sunbedInRoomIsFree: 0
-  restaurantOrderPrice: 100
+  restaurantOrderPrice: 300
   restaurantReputation: 10
   healthFacilityPrice: 100
   healthFacilityReputation: 30
