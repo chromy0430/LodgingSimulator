@@ -17,10 +17,9 @@ MonoBehaviour:
   dialogue: "B\uB97C \uB20C\uB7EC \uAC74\uC124\uCC3D\uC744 \uB744\uC6CC!\n\uBCBD
     \uBC84\uD2BC\uC744 \uB20C\uB7EC \uCCAB\uBC88\uC9F8 \uCF58\uD06C\uB9AC\uD2B8 \uBCBD\uC744
     \uC124\uCE58\uD574!"
-  dialogue_en: 'Press B to open the construction window!
+  dialogue_en: 'Press B - Open Build Menu!
 
-    Press the wall button
-    to install the first concrete wall!'
+    Press Wall And Install!'
   characterImage: {fileID: 2800000, guid: 7d29edea193d1b947ab9a30aa4624dcf, type: 3}
   requiredDay: 1
   requiredHour: 13

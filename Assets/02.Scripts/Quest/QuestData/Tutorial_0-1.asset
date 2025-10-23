@@ -16,9 +16,9 @@ MonoBehaviour:
   questName_en: Tutorial-2
   dialogue: "Q\uB97C \uB20C\uB7EC \uD018\uC2A4\uD2B8\uCC3D\uC744 \uB744\uC6CC!\n\uADF8\uB9AC\uACE0
     \uC644\uB8CC \uBC84\uD2BC\uC744 \uB20C\uB7EC!"
-  dialogue_en: 'Press Q to launch the quest window!
+  dialogue_en: 'Press Q - Open Quest UI
 
-    And press the Finish button!'
+    Press Button For Complete'
   characterImage: {fileID: 2800000, guid: 7d29edea193d1b947ab9a30aa4624dcf, type: 3}
   requiredDay: 1
   requiredHour: 11
