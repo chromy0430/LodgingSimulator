@@ -43,7 +43,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainNormal:
-        m_Texture: {fileID: 2800000, guid: 50693e860d2e99d47a2c2ac7841a8f6b, type: 3}
+        m_Texture: {fileID: 2800000, guid: f94eb45714677754797352addf34d55f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SecondNormal:
@@ -75,11 +75,11 @@ Material:
     - _QueueControl: 1
     - _QueueOffset: 0
     - _Smoothness: 1
-    - _Strength: 0.01
-    - _UnscaledTime: 162.16794
+    - _Strength: 0.03
+    - _UnscaledTime: 31.0721
     m_Colors:
     - _Deep_Water_Color: {r: 0.3003737, g: 0.7761305, b: 0.8490566, a: 1}
-    - _FormColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FormColor: {r: 0.19339621, g: 1, b: 0.8315705, a: 1}
     - _Shallow_Water_Color: {r: 0.0032929946, g: 0.4314961, b: 0.6981132, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

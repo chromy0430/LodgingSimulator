@@ -16230,7 +16230,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1320626920
 Transform:
   m_ObjectHideFlags: 0
@@ -25228,6 +25228,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0e485368ded1d4642a69a78b434afd27, type: 2}
   - {fileID: 11400000, guid: 2d2e22a32b1142347934e49c16a15269, type: 2}
   - {fileID: 11400000, guid: 63a558fe76c67e64f906618427d2c71d, type: 2}
+  - {fileID: 11400000, guid: cf4c0e0a3ba5c7c45a0b9be7599dd5bc, type: 2}
+  - {fileID: 11400000, guid: 7555484b4f7d8a44699d7a39e64b9755, type: 2}
+  - {fileID: 11400000, guid: 9f2d938b67ccb1443b3f4713eca125ca, type: 2}
+  - {fileID: 11400000, guid: 5bb54ef7ce12c554ca2f819c9fd3d9b0, type: 2}
   uiManager: {fileID: 1880077933}
   animationManager: {fileID: 1880077935}
   inputManager: {fileID: 519522462}
@@ -30111,7 +30115,7 @@ PrefabInstance:
       objectReference: {fileID: 1026163267}
     - target: {fileID: 6583045011636605706, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -274.99954
+      value: -274.9999
       objectReference: {fileID: 0}
     - target: {fileID: 7125235026482093240, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -32038,7 +32042,7 @@ PrefabInstance:
       objectReference: {fileID: 1996518943}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: currentReputation
-      value: 99
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: nextGradeInfoText
