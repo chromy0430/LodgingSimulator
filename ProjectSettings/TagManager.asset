@@ -13,7 +13,6 @@ TagManager:
   - Wall
   - Stair
   - Sunbed
-  - WaitingPosition_Reception
   - WorkPosition_Reception
   - KitchenInduction
   - KitchenTable
@@ -22,7 +21,26 @@ TagManager:
   - KitchenChair
   - WorkPosition_Gas
   - WorkPosition_Kitchen
-  - WaitingPosition_Kitchen
+  - BathSitPoint
+  - BathDownPoint
+  - Bath
+  - Health
+  - HealthPoint
+  - Bathtub
+  - BathtubPoint
+  - Wedding
+  - WeddingPoint
+  - Lounge
+  - LoungePoint
+  - Hall
+  - HallPoint
+  - Sauna
+  - SaunaSitPoint
+  - SaunaDownPoint
+  - Cafe
+  - CafePoint
+  - Hos
+  - HosPoint
   layers:
   - Default
   - TransparentFX

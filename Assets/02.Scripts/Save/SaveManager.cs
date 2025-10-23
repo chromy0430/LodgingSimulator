@@ -395,6 +395,7 @@ public class SaveManager : MonoBehaviour
 
             if (PlacementSystem.Instance == null) throw new System.Exception("PlacementSystem.Instance is null");
             PlacementSystem.Instance.currentPurchaseLevel = loadedSaveData.currentPurchaseLevel;
+            PurchaseButton.Instance.ChangeMoneyWhenPurchaseLand(loadedSaveData.currentPurchaseLevel);
             PlacementSystem.Instance.FloorLock = loadedSaveData.floorLock;
             PlacementSystem.Instance.UpdatePurchaseUI();
 
