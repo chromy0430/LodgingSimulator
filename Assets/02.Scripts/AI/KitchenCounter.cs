@@ -402,9 +402,26 @@ namespace JY
             DebugLog($"직원 AI에게 StartOrderProcessing() 호출 - IsHired: {employee.IsHired}, IsWorkTime: {employee.IsWorkTime}, isProcessingOrder: {employee.isProcessingOrder}", true);
             
             // AI 직원에게 주문 전달
-            employee.StartOrderProcessing();
+            bool orderStarted = employee.StartOrderProcessing();
             
-            DebugLog($"StartOrderProcessing() 호출 완료 - employee.isProcessingOrder: {employee.isProcessingOrder}", true);
+            DebugLog($"StartOrderProcessing() 호출 완료 - 시작 성공: {orderStarted}, employee.isProcessingOrder: {employee.isProcessingOrder}", true);
+            
+            // 주문 처리 시작 실패 시 처리
+            if (!orderStarted)
+            {
+                DebugLog($"⚠️ 직원이 주문을 처리할 수 없습니다. 서비스 취소", true);
+                isProcessingOrder = false;
+                currentAssignedEmployee = null;
+                
+                // 손님에게 실패 알림 (다시 시도하도록)
+                if (currentCustomer != null)
+                {
+                    DebugLog($"AI {currentCustomer.name}에게 주문 실패 알림 - 대기열 유지");
+                    // currentCustomer는 대기열에 남아있으므로 다음에 다시 시도
+                }
+                currentCustomer = null;
+                yield break;
+            }
             
             // 처리 완료까지 대기 (최대 20초)
             float timeout = 20f;

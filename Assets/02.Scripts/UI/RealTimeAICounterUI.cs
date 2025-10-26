@@ -36,7 +36,34 @@ namespace JY
             SetupEventBasedUpdate();
         }
         
-        // Update 메서드 제거 - 인원수 변경 시에만 업데이트
+        void OnEnable()
+        {
+            // ✅ 직원 고용/해고 이벤트 구독
+            EmployeeHiringSystem.OnEmployeeHired += OnEmployeeCountChanged;
+            EmployeeHiringSystem.OnEmployeeFired += OnEmployeeCountChanged;
+        }
+        
+        void OnDisable()
+        {
+            // ✅ 이벤트 구독 해제
+            EmployeeHiringSystem.OnEmployeeHired -= OnEmployeeCountChanged;
+            EmployeeHiringSystem.OnEmployeeFired -= OnEmployeeCountChanged;
+            
+            // 참조 정리
+            aiSpawner = null;
+        }
+        
+        /// <summary>
+        /// 직원 수 변경 이벤트 핸들러
+        /// </summary>
+        private void OnEmployeeCountChanged(AIEmployee employee)
+        {
+            // ✅ 직원 고용/해고 시 자동으로 UI 업데이트
+            UpdateAICountDisplay();
+            DebugLog($"직원 변경 감지 - UI 업데이트 (직원: {employee?.employeeName})", true);
+        }
+        
+        // Update 메서드 제거 - 이벤트 기반으로 업데이트
         
         /// <summary>
         /// UI 초기화
@@ -184,12 +211,10 @@ namespace JY
         #region 정리
         void OnDestroy()
         {
-            // 참조 정리
-            aiSpawner = null;
-        }
-        
-        void OnDisable()
-        {
+            // ✅ 이벤트 구독 해제
+            EmployeeHiringSystem.OnEmployeeHired -= OnEmployeeCountChanged;
+            EmployeeHiringSystem.OnEmployeeFired -= OnEmployeeCountChanged;
+            
             // 참조 정리
             aiSpawner = null;
         }

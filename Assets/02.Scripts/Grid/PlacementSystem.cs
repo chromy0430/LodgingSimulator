@@ -9,10 +9,6 @@ public class PlacementSystem : MonoBehaviour
 {
     public static PlacementSystem Instance { get; set; }
 
-    // 25-10-16 영상찍기용 변수
-    public bool isVideoTaking = false;
-    //
-
     [Header("컴포넌트")]
     [SerializeField] private InputManager inputManager;
     [SerializeField] private ObjectPlacer objectPlacer;    
@@ -452,24 +448,6 @@ public class PlacementSystem : MonoBehaviour
         }
 
         previewObject = Instantiate(database.objectsData[selectedObjectIndex].Prefab);
-
-        if (isVideoTaking)
-        {
-             previewObject.layer = LayerMask.NameToLayer("Preview");
-
-             foreach (Transform t in previewObject.GetComponentInChildren<Transform>(true))
-             {
-                 t.gameObject.layer = LayerMask.NameToLayer("Preview");
-                foreach (Transform t2 in t.GetComponentInChildren<Transform>(true))
-                {
-                    t2.gameObject.layer = LayerMask.NameToLayer("Preview");
-                    foreach (Transform t3 in t2.GetComponentInChildren<Transform>(true))
-                    {
-                        t3.gameObject.layer = LayerMask.NameToLayer("Preview");
-                    }
-                }
-            }
-        }
         ApplyPreviewMaterial(previewObject);
     }
 

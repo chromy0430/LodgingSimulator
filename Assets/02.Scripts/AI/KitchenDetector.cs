@@ -82,6 +82,7 @@ namespace JY
         // 프라이빗 변수들
         private List<KitchenInfo> detectedKitchens = new List<KitchenInfo>();
         private List<GameObject> createdKitchenObjects = new List<GameObject>();
+        private Dictionary<string, KitchenInfo> previousKitchens = new Dictionary<string, KitchenInfo>(); // 이전 스캔 결과
         private bool isScanning = false;
         
         // 태그 상수들 (영어)
@@ -115,6 +116,10 @@ namespace JY
         {
             // InvokeRepeating 정리
             CancelInvoke();
+            
+            // 생성된 GameObject들 정리
+            CleanupOldKitchens();
+            previousKitchens.Clear();
             
             if (Instance == this)
             {
@@ -269,9 +274,6 @@ namespace JY
             
             try
             {
-                // 기존 주방 GameObject들 정리
-                CleanupOldKitchens();
-                
                 // 기존 주방 정보 초기화
                 detectedKitchens.Clear();
                 
@@ -286,6 +288,9 @@ namespace JY
                 {
                     DetectKitchensOnFloor(floorGroup.Key, floorGroup.Value);
                 }
+                
+                // ✅ 새로운 스캔 결과와 이전 결과 비교 후 업데이트
+                UpdateKitchenGameObjects();
                 
                 // 결과 업데이트
                 detectedKitchenCount = detectedKitchens.Count;
@@ -402,11 +407,7 @@ namespace JY
                     
                     DebugLog($"✅ {floorLevel}층에서 주방 감지됨: {kitchen.kitchenName}", true);
                     
-                    // 주방 GameObject 생성
-                    if (createKitchenGameObjects)
-                    {
-                        CreateKitchenGameObject(kitchen);
-                    }
+                    // ✅ GameObject 생성은 UpdateKitchenGameObjects()에서 처리
                 }
             }
         }
@@ -543,6 +544,168 @@ namespace JY
         #region 주방 GameObject 관리
         
         /// <summary>
+        /// 새로운 스캔 결과와 비교하여 Kitchen GameObject 업데이트
+        /// - 사라진 Kitchen만 삭제
+        /// - 새로 생긴 Kitchen만 생성
+        /// - 기존 Kitchen은 GameObject 재사용 (구성이 변경되어도 유지)
+        /// </summary>
+        private void UpdateKitchenGameObjects()
+        {
+            // GameObject 생성이 비활성화되어 있으면 스킵
+            if (!createKitchenGameObjects)
+            {
+                DebugLog("⏭️ Kitchen GameObject 생성이 비활성화되어 있음");
+                return;
+            }
+            
+            DebugLog("📊 Kitchen GameObject 업데이트 시작", true);
+            
+            // 1. 현재 감지된 Kitchen들을 처리
+            var processedKitchens = new HashSet<KitchenInfo>();
+            var kitchensToRemove = new List<KitchenInfo>();
+            
+            // 2. 이전 Kitchen들과 비교하여 겹치는지 확인
+            foreach (var prevKitchen in previousKitchens.Values.ToList())
+            {
+                bool foundMatch = false;
+                KitchenInfo matchedKitchen = null;
+                
+                foreach (var currentKitchen in detectedKitchens)
+                {
+                    if (processedKitchens.Contains(currentKitchen)) continue;
+                    
+                    // 두 Kitchen의 구성 요소가 겹치는지 확인 (50% 이상 겹치면 같은 Kitchen)
+                    if (AreKitchensOverlapping(prevKitchen, currentKitchen))
+                    {
+                        foundMatch = true;
+                        matchedKitchen = currentKitchen;
+                        processedKitchens.Add(currentKitchen);
+                        break;
+                    }
+                }
+                
+                if (foundMatch)
+                {
+                    // 기존 Kitchen과 매칭됨 - GameObject 재사용
+                    matchedKitchen.gameObject = prevKitchen.gameObject;
+                    DebugLog($"♻️ Kitchen 재사용: {matchedKitchen.kitchenName} (GameObject: {prevKitchen.gameObject?.name})", true);
+                }
+                else
+                {
+                    // 매칭되지 않음 - 사라진 Kitchen
+                    DebugLog($"🗑️ Kitchen 사라짐: {prevKitchen.kitchenName}", true);
+                    kitchensToRemove.Add(prevKitchen);
+                    
+                    if (prevKitchen.gameObject != null)
+                    {
+                        // EmployeeHiringSystem에 알림
+                        if (EmployeeHiringSystem.Instance != null)
+                        {
+                            DebugLog($"🔥 Kitchen 삭제 - EmployeeHiringSystem 알림: {prevKitchen.gameObject.name}", true);
+                            EmployeeHiringSystem.Instance.OnKitchenDestroyed(prevKitchen.gameObject);
+                        }
+                        
+                        createdKitchenObjects.Remove(prevKitchen.gameObject);
+                        DestroyImmediate(prevKitchen.gameObject);
+                    }
+                }
+            }
+            
+            // 3. 새로 생긴 Kitchen만 GameObject 생성
+            foreach (var kitchen in detectedKitchens)
+            {
+                if (!processedKitchens.Contains(kitchen))
+                {
+                    // 완전히 새로운 Kitchen
+                    DebugLog($"✨ 새 Kitchen 감지: {kitchen.kitchenName}", true);
+                    CreateKitchenGameObject(kitchen);
+                }
+            }
+            
+            // 4. previousKitchens 업데이트
+            previousKitchens.Clear();
+            foreach (var kitchen in detectedKitchens)
+            {
+                // Kitchen GameObject의 인스턴스 ID를 키로 사용
+                if (kitchen.gameObject != null)
+                {
+                    string key = kitchen.gameObject.GetInstanceID().ToString();
+                    previousKitchens[key] = kitchen;
+                }
+            }
+            
+            DebugLog($"✅ Kitchen GameObject 업데이트 완료 (현재: {detectedKitchens.Count}개)", true);
+        }
+        
+        /// <summary>
+        /// 두 Kitchen이 겹치는지 확인 (구성 요소의 50% 이상이 같으면 같은 Kitchen)
+        /// </summary>
+        private bool AreKitchensOverlapping(KitchenInfo kitchen1, KitchenInfo kitchen2)
+        {
+            if (kitchen1.floorLevel != kitchen2.floorLevel)
+                return false;
+            
+            if (kitchen1.elements == null || kitchen2.elements == null)
+                return false;
+            
+            // 두 Kitchen의 구성 요소 GameObject 인스턴스 ID 비교
+            var ids1 = new HashSet<int>();
+            foreach (var element in kitchen1.elements)
+            {
+                if (element.gameObject != null)
+                    ids1.Add(element.gameObject.GetInstanceID());
+            }
+            
+            var ids2 = new HashSet<int>();
+            foreach (var element in kitchen2.elements)
+            {
+                if (element.gameObject != null)
+                    ids2.Add(element.gameObject.GetInstanceID());
+            }
+            
+            // 겹치는 요소 개수 계산
+            int overlapCount = ids1.Intersect(ids2).Count();
+            int minCount = Mathf.Min(ids1.Count, ids2.Count);
+            
+            // 50% 이상 겹치면 같은 Kitchen으로 판단
+            float overlapRatio = minCount > 0 ? (float)overlapCount / minCount : 0f;
+            
+            DebugLog($"  Kitchen 겹침 확인: {kitchen1.kitchenName} vs {kitchen2.kitchenName} - 겹침률: {overlapRatio:P0} ({overlapCount}/{minCount})");
+            
+            return overlapRatio >= 0.5f; // 50% 이상 겹치면 같은 Kitchen
+        }
+        
+        /// <summary>
+        /// Kitchen의 고유 키 생성 (구성 요소 중 가장 작은 인스턴스 ID)
+        /// Kitchen이 확장되어도 기존 요소가 포함되어 있으면 같은 키 유지
+        /// </summary>
+        private string GetKitchenKey(KitchenInfo kitchen)
+        {
+            if (kitchen.elements == null || kitchen.elements.Count == 0)
+            {
+                // 요소가 없으면 중심 위치 기반 (fallback)
+                return $"F{kitchen.floorLevel}_X{kitchen.centerPosition.x:F1}_Z{kitchen.centerPosition.z:F1}";
+            }
+            
+            // 구성 요소들 중 가장 작은 인스턴스 ID를 "대표 ID"로 사용
+            int minInstanceId = int.MaxValue;
+            foreach (var element in kitchen.elements)
+            {
+                if (element.gameObject != null)
+                {
+                    int instanceId = element.gameObject.GetInstanceID();
+                    if (instanceId < minInstanceId)
+                    {
+                        minInstanceId = instanceId;
+                    }
+                }
+            }
+            
+            // 층 + 대표 인스턴스 ID
+            return $"F{kitchen.floorLevel}_ID{minInstanceId}";
+        }
+        
+        /// <summary>
         /// 기존 주방 GameObject들 정리
         /// </summary>
         private void CleanupOldKitchens()
@@ -551,6 +714,15 @@ namespace JY
             {
                 if (kitchenObj != null)
                 {
+                    DebugLog($"🗑️ Kitchen GameObject 파괴: {kitchenObj.name}", true);
+                    
+                    // ✅ Kitchen GameObject 파괴 **전에** EmployeeHiringSystem에 알림!
+                    if (EmployeeHiringSystem.Instance != null)
+                    {
+                        DebugLog($"🔥🔥🔥 Kitchen 삭제 감지 - EmployeeHiringSystem에 알림: {kitchenObj.name}", true);
+                        EmployeeHiringSystem.Instance.OnKitchenDestroyed(kitchenObj);
+                    }
+                    
                     DestroyImmediate(kitchenObj);
                 }
             }
