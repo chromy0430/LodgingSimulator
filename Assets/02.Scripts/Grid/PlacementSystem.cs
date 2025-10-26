@@ -66,9 +66,9 @@ public class PlacementSystem : MonoBehaviour
     [Header("NavMesh 업데이트 최적화")]
     [SerializeField] private AutoNavMeshBaker navMeshBaker;
     [Tooltip("건축 후 NavMesh 업데이트까지의 대기 시간(초)")]
-    [SerializeField] private float navMeshRebuildDelay = 0.5f;
-    private bool navMeshNeedsRebuild = false;
-    private float navMeshRebuildTimer = 0f;
+    [SerializeField] private float navMeshRebuildDelay = 1f;
+    public bool navMeshNeedsRebuild = false;
+    public float navMeshRebuildTimer = 0f;
 
     [Header("툴팁 관련")]
     [SerializeField] private GameObject tooltipPanel;
@@ -113,27 +113,45 @@ public class PlacementSystem : MonoBehaviour
 
     private void Update()
     {
-        DeliteModeMouth();
+        NavMeshReBuild();
 
+        DeliteModeMouth();
 
         if (selectedObjectIndex < 0) return;
 
         IndicatorPos();
         PreviewObjectFunc();
-        DragPlacement();
+        DragPlacement(); 
 
         mousePosition = inputManager.GetSelectedMapPosition();
         gridPosition = grid.WorldToCell(inputManager.GetSelectedMapPosition());
         GridPositionYandFloor();
 
+        
+    }
+
+    public void NavMeshReBuild()
+    {
         if (navMeshNeedsRebuild)
         {
-            navMeshRebuildTimer -= Time.unscaledDeltaTime;
+            // timeScale에 따라 동적으로 델타 타임 선택 (창의적: 삼항으로 한 줄 처리)
+            float deltaTimeToUse = (Time.timeScale == 0f) ? Time.unscaledDeltaTime : Time.deltaTime;
+            navMeshRebuildTimer -= deltaTimeToUse;
+
             if (navMeshRebuildTimer <= 0f)
             {
-                navMeshNeedsRebuild = false; // 플래그를 다시 false로
-                navMeshBaker?.RebuildNavMesh(); // 타이머가 끝나면 딱 한 번만 실행
-                Debug.Log("-------------------------베이킹 성공--------------------");
+                navMeshNeedsRebuild = false; // 플래그 초기화
+                if (navMeshBaker != null && Time.timeScale == 0f)
+                {
+                    // pause 중 리빌드: 백그라운드처럼 느껴지게 하려면 코루틴으로 분산할 수도 있지만, 여기선 직관적으로
+                    navMeshBaker.RebuildNavMesh();
+                    Debug.Log("-------------------------pause 중 베이킹 성공--------------------");
+                }
+                else if (navMeshBaker != null)
+                {
+                    navMeshBaker.RebuildNavMesh();
+                    Debug.Log("-------------------------베이킹 성공--------------------");
+                }
             }
         }
     }
@@ -537,8 +555,8 @@ public class PlacementSystem : MonoBehaviour
             grid,
             isWall
         );
-        //if (inputManager.hit.transform is not null) Debug.Log($"현재 설치된 오브젝트 : {index}, 선택한 오브젝트 : {inputManager.hit.transform.name}");
-    
+
+        MarkNavMeshDirty();
     }
     #endregion
 
@@ -1293,6 +1311,9 @@ public class PlacementSystem : MonoBehaviour
                                new Vector3Int(0, 0, (int)Mathf.Sign(endPos.z - startPos.z));
 
         Vector3Int currentPos = startPos;
+
+        bool placedAny = false;
+
         for (int i = 0; i < stepCount; i++)
         {
             if (CheckPlacementValidity(currentPos, selectedObjectIndex, previewRotation))
@@ -1312,9 +1333,12 @@ public class PlacementSystem : MonoBehaviour
                 
                 selectedData.AddObjectAt(currentPos, objectSize, database.objectsData[selectedObjectIndex].ID, index, 
                 database.objectsData[selectedObjectIndex].kindIndex, previewRotation, grid, isWall);
+                placedAny = true; // 설치 성공
             }
             currentPos += stepDirection;
         }
+
+        if (placedAny) MarkNavMeshDirty();
     }
     
     private GridData GetSelectedGridData()
@@ -1477,6 +1501,7 @@ public class PlacementSystem : MonoBehaviour
             objectPlacer.RemoveObject(objectIndex);
             PlayerWallet.Instance.AddMoney(objectData.BuildPrice);
             Debug.Log($"오브젝트 삭제 완료: 인덱스 {objectIndex}");
+            MarkNavMeshDirty();
         }
         else
         {

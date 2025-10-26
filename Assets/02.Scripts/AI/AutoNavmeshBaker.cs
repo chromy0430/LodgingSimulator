@@ -156,10 +156,6 @@ public class AutoNavMeshBaker : MonoBehaviour
             yield break;
         }
 
-        // *** 수정된 부분 시작 ***
-        isBaking = true; // 베이킹 시작 플래그
-        if (showDebugLogs) { }
-
         // NavMesh 데이터가 없으면 새로 빌드
         if (_navsurface.navMeshData == null)
         {
@@ -174,6 +170,11 @@ public class AutoNavMeshBaker : MonoBehaviour
                 //yield return new WaitForSecondsRealtime(0.1f);
                 yield return null;
             }
+
+            if(operation.isDone)
+                {
+                    Debug.Log("AutoNavmeshBaker.cs => Navmesh 베이킹 완료");
+                }
         }
 
         // NavMesh 통계 출력

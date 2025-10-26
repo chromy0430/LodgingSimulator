@@ -260,8 +260,18 @@ public class SaveManager : MonoBehaviour
                 Debug.Log("새 게임 시작 - 통계 데이터 초기화됨");
             }
 
-            await LoadMainScene();
+            if (LoadingSystem.Instance != null)
+            {
+                LoadingSystem.Instance.StartCoroutine(LoadingSystem.Instance.LoadSceneAsync("MainScene"));
+            }
+            else
+            {
+                await LoadMainSceneFallback(); // 비상시
+            }
             return;
+
+            //await LoadMainScene();
+            //return;
         }
 
         try
@@ -279,11 +289,34 @@ public class SaveManager : MonoBehaviour
                     Debug.Log("세이브 데이터 로드 실패 - 통계 데이터 초기화됨");
                 }
 
-                await LoadMainScene();
+
+                // [수정] 씬 로딩을 LoadingSystem에 맡김
+                if (LoadingSystem.Instance != null)
+                {
+                    LoadingSystem.Instance.StartCoroutine(LoadingSystem.Instance.LoadSceneAsync("MainScene"));
+                }
+                else
+                {
+                    await LoadMainSceneFallback(); // 비상시
+                }
                 return;
+                //await LoadMainScene();
+                //return;
             }
 
-            await LoadMainScene();
+            // [수정] 씬 로딩을 LoadingSystem에 맡김
+            if (LoadingSystem.Instance != null)
+            {
+                // LoadingSystem이 씬 로드 및 UI 표시를 모두 처리
+                // OnSceneLoaded는 데이터 복원을 위해 계속 필요함
+                LoadingSystem.Instance.StartCoroutine(LoadingSystem.Instance.LoadSceneAsync("MainScene"));
+            }
+            else
+            {
+                await LoadMainSceneFallback(); // 비상시
+            }
+
+            //await LoadMainScene();
         }
         catch (System.Exception e)
         {
@@ -296,7 +329,24 @@ public class SaveManager : MonoBehaviour
                 Debug.Log("세이브 파일 로드 오류 - 통계 데이터 초기화됨");
             }
 
-            await LoadMainScene();
+            if (LoadingSystem.Instance != null)
+            {
+                LoadingSystem.Instance.StartCoroutine(LoadingSystem.Instance.LoadSceneAsync("MainScene"));
+            }
+            else
+            {
+                await LoadMainSceneFallback(); // 비상시
+            }
+            //await LoadMainScene();
+        }
+    }
+
+    private async Task LoadMainSceneFallback()
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainScene");
+        while (!asyncLoad.isDone)
+        {
+            await Task.Yield();
         }
     }
 
@@ -519,6 +569,9 @@ public class SaveManager : MonoBehaviour
             PlacementSystem.Instance.ActivatePlanesByLevel(loadedSaveData.currentPurchaseLevel);
             PlacementSystem.Instance.UpdateGridBounds();
             PlacementSystem.Instance.HideAllPlanes();
+
+            PlacementSystem.Instance.MarkNavMeshDirty();
+            //PlacementSystem.Instance.NavMeshReBuild();
 
             NewTutorialGuide.Instance.isTutorialFinish = loadedSaveData.isTutorialFinished;
 

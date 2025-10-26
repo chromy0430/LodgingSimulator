@@ -1,6 +1,5 @@
 using DG.Tweening;
 using JY;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 public class ObjectPlacer : MonoBehaviour
@@ -113,9 +112,9 @@ public class ObjectPlacer : MonoBehaviour
             Debug.Log("❌ KitchenDetector.Instance가 null입니다! 씬에 KitchenDetector가 있는지 확인하세요.");
         }
 
-        PlacementSystem.Instance.MarkNavMeshDirty();
         return index;
     }
+
 
     /// <summary>
     /// 오브젝트들을 삭제한다.
@@ -123,8 +122,6 @@ public class ObjectPlacer : MonoBehaviour
     /// <param name="index"></param>
     public void RemoveObject(int index)
     {
-        PlacementSystem.Instance.MarkNavMeshDirty();
-
         if (index >= 0 && index < placedGameObjects.Count)
         {
 
@@ -165,6 +162,7 @@ public class ObjectPlacer : MonoBehaviour
                         objectPool.Return(obj);
 
                         spawnEffect.OnBuildingPlaced(obj.transform.position);
+
                     });
             }
             placedGameObjects[index] = null; // 참조 제거 (선택적으로 리스트에서 완전히 제거 가능)            

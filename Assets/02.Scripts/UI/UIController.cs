@@ -13,7 +13,17 @@ public class UIController : MonoBehaviour
         if (!isLoading)
         {
             isLoading = true;
-            loadingSystem.LoadScene("MainScene");            
+
+            if (LoadingSystem.Instance != null)
+            {
+                LoadingSystem.Instance.LoadScene("MainScene");
+            }
+            else
+            {
+                // 비상시 (LoadingSystem이 없는 경우)
+                loadingSystem.LoadScene("MainScene");
+            }
+            //loadingSystem.LoadScene("MainScene");            
         }
     }
 
@@ -31,8 +41,9 @@ public class UIController : MonoBehaviour
             // 저장된 게임 로드
             if (SaveManager.Instance != null)
             {
-                await SaveManager.Instance.LoadGame();
-                loadingSystem.LoadScene("MainScene");
+                SaveManager.Instance.LoadGame();
+                //await SaveManager.Instance.LoadGame();
+                //loadingSystem.LoadScene("MainScene");
             }
             else
             {
