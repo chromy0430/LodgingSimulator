@@ -190,8 +190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   queueSpacing: 2
   counterServiceDistance: 2
-  maxQueueLength: 10
+  maxQueueLength: 5
   serviceTime: 5
   requiresEmployee: 1
   assignedEmployee: {fileID: 0}
-  noEmployeeMessage: "\uC9C1\uC6D0\uC744 \uACE0\uC6A9\uD574\uC8FC\uC138\uC694"

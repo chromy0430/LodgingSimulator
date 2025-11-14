@@ -58,10 +58,7 @@ public class PlacementData
         this.originPosition = originPosition;
 
         this.occupiedPositions = occupiedPositions;
-        foreach(Vector3Int pos in occupiedPositions)
-        {
-            Debug.Log($"설치 = {pos}");
-        }
+        
         
         this.id = id;
         this.placedObjectIndex = placedObjectIndex;

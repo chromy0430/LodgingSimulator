@@ -649,86 +649,103 @@ namespace JY
              
              return isValid ? room : null;
          }
-         
-         /// <summary>
-         /// 특정 위치 주변의 벽 경계면을 찾기 (제한된 범위)
-         /// </summary>
-         private void FindWallBoundariesAroundPosition(Vector3Int centerPos, HashSet<Vector3Int> walls, HashSet<Vector3Int> doors)
-         {
-             DebugLog($"위치 {centerPos} 주변 벽 경계면 탐색 시작 (최대 반경: {maxWallSearchRadius}, 최대 셀: {maxWallSearchCells})", true);
-             
-             HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
-             Queue<Vector3Int> queue = new Queue<Vector3Int>();
-             
-             queue.Enqueue(centerPos);
-             visited.Add(centerPos);
-             
-             Vector3Int[] directions = GetDirections();
-             int iterations = 0;
-             
-             while (queue.Count > 0 && iterations < maxFloodFillIterations && visited.Count < maxWallSearchCells)
-             {
-                 iterations++;
-                 Vector3Int current = queue.Dequeue();
-                 
-                 // 중심점에서 너무 멀면 중단
-                 float distance = Vector3Int.Distance(centerPos, current);
-                 if (distance > maxWallSearchRadius)
-                 {
-                     DebugLog($"탐색 반경 초과로 중단: {current} (거리: {distance:F1})", showScanLogs);
-                     continue;
-                 }
 
-                 foreach (var dir in directions)
-                 {
-                     Vector3Int neighbor = current + dir;
-                     
-                     if (visited.Contains(neighbor)) continue;
-                     
-                     // 반경 체크
-                     if (Vector3Int.Distance(centerPos, neighbor) > maxWallSearchRadius)
-                         continue;
-                     
-                     visited.Add(neighbor);
-                     
-                     // Y축 오프셋을 고려하여 벽과 문 확인
-                     bool foundBoundary = false;
-                     for (int yOffset = 0; yOffset <= 2; yOffset++)
-                     {
-                         Vector3Int checkPos = new Vector3Int(neighbor.x, centerPos.y + yOffset, neighbor.z);
-                         
-                         if (roomGrid.TryGetValue(checkPos, out RoomCell cell))
-                         {
-                             if (cell.isWall)
-                             {
-                                 walls.Add(checkPos);
-                                 foundBoundary = true;
-                                 DebugLog($"벽 경계 발견: {checkPos} (거리: {Vector3Int.Distance(centerPos, neighbor):F1})", showScanLogs);
-                             }
-                             if (cell.isDoor)
-                             {
-                                 doors.Add(checkPos);
-                                 foundBoundary = true;
-                                 DebugLog($"문 경계 발견: {checkPos} (거리: {Vector3Int.Distance(centerPos, neighbor):F1})", showScanLogs);
-                             }
-                         }
-                     }
-                     
-                     // 벽이나 문이 아닌 빈 공간이면 계속 탐색 (단, 반경 내에서만)
-                     if (!foundBoundary && Vector3Int.Distance(centerPos, neighbor) < maxWallSearchRadius)
-                     {
-                         queue.Enqueue(neighbor);
-                     }
-                 }
-             }
-             
-             DebugLog($"벽 경계면 탐색 완료 - 반복: {iterations}회, 방문 셀: {visited.Count}/{maxWallSearchCells}개, 벽: {walls.Count}개, 문: {doors.Count}개, 최대 반경: {maxWallSearchRadius}", true);
-         }
-         
-         /// <summary>
-         /// 벽 경계면을 기준으로 방 내부 영역 찾기 (제한된 범위)
-         /// </summary>
-         private void FindRoomInteriorByWallBoundaries(Vector3Int startPos, HashSet<Vector3Int> wallBoundaries, HashSet<Vector3Int> doorBoundaries,
+        /// <summary>
+        /// 벽 경계면 탐색 시 Pv_Wall 벽만 고려하도록 필터링
+        /// </summary>
+        private void FindWallBoundariesAroundPosition(Vector3Int centerPos, HashSet<Vector3Int> walls, HashSet<Vector3Int> doors)
+        {
+            DebugLog($"위치 {centerPos} 주변 벽 경계면 탐색 시작 (Pv_Wall 필터링 적용)", true);
+
+            HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
+            Queue<Vector3Int> queue = new Queue<Vector3Int>();
+
+            queue.Enqueue(centerPos);
+            visited.Add(centerPos);
+
+            Vector3Int[] directions = GetDirections();
+            int iterations = 0;
+
+            while (queue.Count > 0 && iterations < maxFloodFillIterations && visited.Count < maxWallSearchCells)
+            {
+                iterations++;
+                Vector3Int current = queue.Dequeue();
+
+                float distance = Vector3Int.Distance(centerPos, current);
+                if (distance > maxWallSearchRadius)
+                {
+                    DebugLog($"탐색 반경 초과로 중단: {current} (거리: {distance:F1})", showScanLogs);
+                    continue;
+                }
+
+                foreach (var dir in directions)
+                {
+                    Vector3Int neighbor = current + dir;
+
+                    if (visited.Contains(neighbor)) continue;
+
+                    if (Vector3Int.Distance(centerPos, neighbor) > maxWallSearchRadius)
+                        continue;
+
+                    visited.Add(neighbor);
+
+                    bool foundBoundary = false;
+                    for (int yOffset = 0; yOffset <= 2; yOffset++)
+                    {
+                        Vector3Int checkPos = new Vector3Int(neighbor.x, centerPos.y + yOffset, neighbor.z);
+
+                        if (roomGrid.TryGetValue(checkPos, out RoomCell cell))
+                        {
+                            // 벽인 경우 Pv_Wall 벽만 경계로 인식
+                            if (cell.isWall)
+                            {
+                                // Pv_Wall 벽인지 확인
+                                bool isOriginalWall = false;
+                                foreach (var obj in cell.objects)
+                                {
+                                    if (obj != null && obj.name.StartsWith("Pv_Wall"))
+                                    {
+                                        isOriginalWall = true;
+                                        break;
+                                    }
+                                }
+
+                                if (isOriginalWall)
+                                {
+                                    walls.Add(checkPos);
+                                    foundBoundary = true;
+                                    DebugLog($"Pv_Wall 벽 경계 발견: {checkPos} (거리: {Vector3Int.Distance(centerPos, neighbor):F1})", showScanLogs);
+                                }
+                                else
+                                {
+                                    DebugLog($"외부 벽 무시: {checkPos} (Pv_Wall 아님)", showScanLogs);
+                                }
+                            }
+
+                            // 문은 항상 포함
+                            if (cell.isDoor)
+                            {
+                                doors.Add(checkPos);
+                                foundBoundary = true;
+                                DebugLog($"문 경계 발견: {checkPos} (거리: {Vector3Int.Distance(centerPos, neighbor):F1})", showScanLogs);
+                            }
+                        }
+                    }
+
+                    if (!foundBoundary && Vector3Int.Distance(centerPos, neighbor) < maxWallSearchRadius)
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+
+            DebugLog($"벽 경계면 탐색 완료 - Pv_Wall 벽: {walls.Count}개, 문: {doors.Count}개", true);
+        }
+
+        /// <summary>
+        /// 벽 경계면을 기준으로 방 내부 영역 찾기 (제한된 범위)
+        /// </summary>
+        private void FindRoomInteriorByWallBoundaries(Vector3Int startPos, HashSet<Vector3Int> wallBoundaries, HashSet<Vector3Int> doorBoundaries,
              HashSet<Vector3Int> roomFloors, HashSet<Vector3Int> bedsInRoom, HashSet<Vector3Int> localVisited, HashSet<Vector3Int> globalVisited)
          {
              DebugLog($"벽 경계면 기준 방 내부 탐색 시작: {startPos} (최대 반경: {maxRoomInteriorRadius}, 최대 셀: {maxRoomInteriorCells})", true);
@@ -1825,20 +1842,35 @@ namespace JY
                  DebugLog("벽이나 문이 없어서 방 경계를 설정할 수 없습니다.", true);
                  return;
              }
-             
+
+            List<Vector3> originalWallPositions = new List<Vector3>();
+
              // 벽과 문의 위치를 기준으로 방 경계 계산
              List<Vector3> boundaryPositions = new List<Vector3>();
              
              // 벽 위치 추가
              foreach (var wall in room.walls)
              {
-                 if (wall != null)
+                 if (wall != null && wall.name.StartsWith("Pv_Wall"))
                  {
                      Vector3 wallPos = wall.transform.position;
                      boundaryPositions.Add(wallPos);
                      DebugLog($"🧱 벽 위치: {wall.name} at {wallPos} (Y={wallPos.y:F1})", true);
                  }
              }
+
+             if(originalWallPositions.Count == 0)
+            {
+                foreach (var wall in room.walls)
+                {
+                    if (wall != null)
+                    {
+                        Vector3 wallPos = wall.transform.position;
+                        originalWallPositions.Add(wallPos);
+                        DebugLog($"🧱 대체 벽 위치: {wall.name} at {wallPos} (Y={wallPos.y:F1})", true);
+                    }
+                }
+            }
              
              // 문 위치 추가
              foreach (var door in room.doors)
@@ -1884,7 +1916,7 @@ namespace JY
              DebugLog($"🏢 층 계산: baseY({baseY:F1}) → 층레벨({floorLevel}) → 기준Y({floorBaseY:F1})", true);
              
              // 벽 두께를 고려하여 내부 공간 계산 (벽 안쪽으로 약간 들어간 위치)
-             float wallThickness = 0.5f; // 벽 두께의 절반
+             float wallThickness = 0.3f; // 벽 두께의 절반
              float roomMinX = minX + wallThickness;
              float roomMaxX = maxX - wallThickness;
              float roomMinZ = minZ + wallThickness;
@@ -1919,7 +1951,10 @@ namespace JY
              
              room.center = room.bounds.center;
              room.floorLevel = floorLevel;
-             room.roomId = $"Room_F{room.floorLevel}_{room.center.x:F0}_{room.center.z:F0}";
+
+            // 방 ID를 원래 벽들의 해시값으로 생성하여 고정
+            string wallHash = CalculateWallsHash(room.walls);            
+            room.roomId = $"Room_F{room.floorLevel}_{room.center.x:F0}_{room.center.z:F0}";
              
              DebugLog($"🎯 최종 바운더리: Min({boundsMin}) Max({boundsMax}) Center({room.center})", true);
              
@@ -1930,7 +1965,64 @@ namespace JY
                       $"방 크기: {room.bounds.size} (W:{roomWidth:F1} x D:{roomDepth:F1} x H:{FloorConstants.ROOM_HEIGHT:F1})\n" +
                       $"벽: {room.walls.Count}개, 문: {room.doors.Count}개, 침대: {room.beds.Count}개", true);
          }
-        
+
+        /// <summary>
+        /// Pv_Wall로 시작하는 원래 벽들의 개수 계산
+        /// </summary>
+        private int GetOriginalWallsCount(List<GameObject> walls)
+        {
+            int count = 0;
+            foreach (var wall in walls)
+            {
+                if (wall != null && wall.name.StartsWith("Pv_Wall"))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// 벽들의 해시값 계산 (방 ID 고정용)
+        /// </summary>
+        private string CalculateWallsHash(List<GameObject> walls)
+        {
+            List<string> originalWallNames = new List<string>();
+
+            foreach (var wall in walls)
+            {
+                if (wall != null && wall.name.StartsWith("Pv_Wall"))
+                {
+                    originalWallNames.Add(wall.name);
+                }
+            }
+
+            // 원래 벽이 없는 경우 모든 벽 사용
+            if (originalWallNames.Count == 0)
+            {
+                foreach (var wall in walls)
+                {
+                    if (wall != null)
+                    {
+                        originalWallNames.Add(wall.name);
+                    }
+                }
+            }
+
+            // 이름 정렬 후 해시 생성
+            originalWallNames.Sort();
+            string combined = string.Join("_", originalWallNames);
+
+            // 간단한 해시 생성
+            int hash = 0;
+            foreach (char c in combined)
+            {
+                hash = (hash * 31 + c) % 1000000;
+            }
+
+            return hash.ToString("X6");
+        }
+
         /// <summary>
         /// Y축 오프셋을 고려하여 침대와 선베드를 찾는 헬퍼 메서드
         /// </summary>

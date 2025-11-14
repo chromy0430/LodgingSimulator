@@ -14191,7 +14191,7 @@ MonoBehaviour:
   placementSystem: {fileID: 1026163267}
   grid: {fileID: 1923795467}
   maxFloodFillIterations: 2000
-  maxRoomSize: 200
+  maxRoomSize: 300
   maxWallSearchRadius: 20
   maxWallSearchCells: 300
   maxRoomInteriorRadius: 25
@@ -19846,7 +19846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smokeEffectPrefab: {fileID: 5730271338707862458, guid: 4dddedc282ed43940aa89ead9a9761a7, type: 3}
-  poolSize: 10
+  poolSize: 50
   effectDuration: 1
 --- !u!114 &1541440233 stripped
 MonoBehaviour:
@@ -32757,7 +32757,7 @@ PrefabInstance:
       objectReference: {fileID: 1996518943}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: currentReputation
-      value: 500
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: nextGradeInfoText

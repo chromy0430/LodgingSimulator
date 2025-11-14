@@ -8437,6 +8437,7 @@ public class AIAgent : MonoBehaviour
             {
                 if (occupiedHosFacilities.ContainsKey(hosTransform))
                 {
+                    Debug.Log("이미 점유중인 HOS 입니다");
                     continue;
                 }
             }
@@ -8447,12 +8448,13 @@ public class AIAgent : MonoBehaviour
 
             foreach (Transform point in hosPoints)
             {
-                if (point.CompareTag("HosPosition"))
+                if (point.CompareTag("HosPoint"))
                 {
                     lock (hosPointLock)
                     {
                         if (!occupiedHosPoints.ContainsKey(point))
                         {
+                            Debug.Log("사용가능한 HOS 입니다");
                             hasAvailablePoint = true;
                             break;
                         }
@@ -8462,6 +8464,7 @@ public class AIAgent : MonoBehaviour
 
             if (!hasAvailablePoint)
             {
+                Debug.Log("사용 불가능 HOS");
                 continue;
             }
 
@@ -8482,8 +8485,12 @@ public class AIAgent : MonoBehaviour
             TransitionToState(AIState.MovingToHos);
             return true;
         }
+        else
+        {
+            Debug.Log("nearestHos가 Null 입니다.");
+        }
 
-        Debug.Log($"[Hos] {gameObject.name}: 사용 가능한 Hos가 없습니다.");
+                Debug.Log($"[Hos] {gameObject.name}: 사용 가능한 Hos가 없습니다.");
         return false;
     }
 
@@ -8529,7 +8536,7 @@ public class AIAgent : MonoBehaviour
 
                 foreach (Transform point in hosPoints)
                 {
-                    if (point.CompareTag("HosPosition"))
+                    if (point.CompareTag("HosPoint"))
                     {
                         lock (hosPointLock)
                         {
@@ -8629,7 +8636,7 @@ public class AIAgent : MonoBehaviour
 
         foreach (Transform point in points)
         {
-            if (point.CompareTag("HosPosition"))
+            if (point.CompareTag("HosPoint"))
             {
                 // 이미 점유된 포인트는 건너뛰기
                 lock (hosPointLock)

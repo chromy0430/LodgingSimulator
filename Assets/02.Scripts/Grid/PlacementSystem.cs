@@ -588,7 +588,6 @@ public class PlacementSystem : MonoBehaviour
             bool isWithinBounds = planeBounds.AsValueEnumerable().Any(bound => bound.Contains(worldPos));
             if (!isWithinBounds)
             {
-                Debug.Log($"그리드 반경을 벗어남: {pos}");
                 return false;
             }
         }
@@ -796,10 +795,8 @@ public class PlacementSystem : MonoBehaviour
             // 1. 기존 다른 벽과의 충돌 검사
             if (!wallData.CanPlaceObjectAt(gridPosition, objectToPlace.Size, rotation, grid, placingWall))
             {
-                Debug.Log($"벽 배치 불가: 같은 각도의 벽 충돌 at {gridPosition}");
                 return false;
             }
-            Debug.Log($"벽-벽 충돌 검사 통과 at {gridPosition}");
 
             // 2. 벽과 가구 간 충돌 검사 (Raycast 기반)
             GameObject tempObject = Instantiate(prefab, grid.GetCellCenterWorld(gridPosition), rotation);
@@ -812,11 +809,9 @@ public class PlacementSystem : MonoBehaviour
 
             if (wallCollider is null)
             {
-                Debug.Log($"벽 배치 불가: 콜라이더 없음 at {gridPosition}");
                 Destroy(tempObject);
                 return false;
             }
-            Debug.Log($"콜라이더 확인 완료: {wallCollider.gameObject.name}");
 
             // 충돌 검사를 위해 렌더러 비활성화
             Renderer[] renderers = tempObject.GetComponentsInChildren<Renderer>();
@@ -861,16 +856,10 @@ public class PlacementSystem : MonoBehaviour
                 if (Physics.Raycast(origin, raycastDirection, distance, furnitureLayerMask)) // 수정된 코드
                 {
                     collision = true;
-                    Debug.DrawRay(origin, raycastDirection * distance, Color.red, 2f);
-                    Debug.Log($"벽 배치 불가: Raycast로 가구와 충돌 감지됨 at {gridPosition}, 방향: {raycastDirection}, 발사 위치: {origin}");
                     break;
                 }
             }
 
-            if (!collision)
-            {
-                Debug.Log($"벽-가구 충돌 검사 통과 at {gridPosition}");
-            }
 
             // 충돌이 감지되면 벽 설치 차단
             if (collision)
@@ -880,10 +869,7 @@ public class PlacementSystem : MonoBehaviour
             }
 
             Destroy(tempObject);
-            Debug.Log($"벽 배치 가능: 모든 검사 통과 at {gridPosition}");
         }        
-
-        Debug.Log("벽 검사 끝");
     
         // 모든 검사를 통과하면 배치 가능
         return true;
@@ -1429,7 +1415,6 @@ public class PlacementSystem : MonoBehaviour
         inputManager.OnClicked -= DeleteStructure;
         //inputManager.OnExit -= StopDeleteMode;
         mouseIndicator.SetActive(false); // 인디케이터 비활성화
-        Debug.Log("삭제 모드 종료");
     }
 
     private void DeleteStructure()
