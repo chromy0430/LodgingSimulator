@@ -25740,7 +25740,7 @@ MonoBehaviour:
   objectPlacer: {fileID: 36320661}
   cameraCon: {fileID: 1156550927}
   currentStepIndex: -1
-  isTutorialFinish: 0
+  isTutorialFinish: 1
 --- !u!114 &1880077935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30738,7 +30738,7 @@ PrefabInstance:
       objectReference: {fileID: 1026163267}
     - target: {fileID: 6583045011636605706, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -274.99994
+      value: -274.9998
       objectReference: {fileID: 0}
     - target: {fileID: 7125235026482093240, guid: 84b31404f8a42f64ba20d064d5cfa17a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -32757,7 +32757,7 @@ PrefabInstance:
       objectReference: {fileID: 1996518943}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: currentReputation
-      value: 5000
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7760248286012378703, guid: 76555572820be3541a463ae5f744e577, type: 3}
       propertyPath: nextGradeInfoText
@@ -32992,7 +32992,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2056636301797475575, guid: bfc1f523384d81140acf06b0d53990a9, type: 3}
       propertyPath: money
-      value: 10000
+      value: 1000000
       objectReference: {fileID: 0}
     - target: {fileID: 2056636301797475575, guid: bfc1f523384d81140acf06b0d53990a9, type: 3}
       propertyPath: moneyTextTransform

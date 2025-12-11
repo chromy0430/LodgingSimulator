@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
+using JY;
 
 public class InputManager : MonoBehaviour
 {
@@ -154,6 +155,11 @@ public class InputManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.H))
         {
             HiringUI.gameObject.SetActive(!HiringUI.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            ReputationSystem.Instance.AddReputation(100);
         }
     }
 
